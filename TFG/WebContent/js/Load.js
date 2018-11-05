@@ -9,12 +9,7 @@ $(document).ready(function(){
         	if(connected === false){
         		MenuManager.LoadMenuNoConnection();
         	}else{
-        		if(google_user ===true){
-            		MenuManager.LoadMenuWithConnectionGoogle();
-        		}else{
             		MenuManager.LoadMenuWithConnection();
-        		}
-
         	}
         }   
     }, 500);

@@ -1,23 +1,19 @@
 <!DOCTYPE html>
-<html lang="es-ES">
+<html>
 <head>
-<meta charset="utf-8">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="UTF-8">
 <title>MAFD</title>
 <!-- CSS -->
 <link href="../css/bootstrap.css" rel="stylesheet">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
+<link href = "../css/cargaArchivos.css" rel = "stylesheet">
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<link href = "../css/index.css" rel = "stylesheet">
-<link href = "../css/login.css" rel = "stylesheet">
 
 <!-- Scripts -->
 <script src="../js/jquery.js"></script>
 <script src="../js/bootstrap.js"></script>
 <script src="../js/bootstrap.min.js"></script>
 <script src="../js/Aintro.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 
 <!-- Load -->
 <script src="../js/Load.js"></script>
@@ -25,16 +21,26 @@
 <script src="../js/ConnectionManager.js"></script>
 <!-- Menu -->
 <script src="../js/MenuManager.js"></script>
-<!-- Login -->
-<script src="../js/login.js"></script>
-</head>
+<!-- Carga FALTA AÑADIR -->
+<script src="../js/cargaArchivos.js"></script> 
 
-<body> 
+</head>
+<body>
 	<div id="menu"></div>
-	<div style="text-align: center;" class="cuerpo"></div>
-		<div class="divIntroduccion">Aplicación para la monitorización
-			automática de estudiantes para la detección temprana de posibles
-			fracasos académicos</div>
-		<div id="div_login"></div>
+	<div class="default-file-upload">
+		<h1>Archivo de configuracion</h1>
+
+		<input id="file-upload1" type="file" />
+	</div>
+	<br>
+	<br>
+	<div class="custom-file-upload">
+		<h1>Archivo Excel de calificaciones</h1>
+		<label for="file-upload" class="custom-file-upload"> <i
+			class="fa fa-cloud-upload"></i> Excel upload
+		</label> <input id="file-upload" type="file" />
+	</div>
+
+
 </body>
 </html>

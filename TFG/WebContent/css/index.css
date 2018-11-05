@@ -1,15 +1,15 @@
 .cuerpo{
   
 }
-.divInroduccion{
+.divIntroduccion{
   margin-top: 5%;
-    font-size: 1.4em;
-    font-family: cursive;
+    font-size: 2em;
+    font-family: arial;
 }
 .nombres{
-  margin-top: 5%;
-    font-size: x-large;
-    color: blueviolet;
+  margin-top: 35%;
+    font-size: large;
+    color: #000000;
 }
 .typewrite{
    font-family: cursive;  

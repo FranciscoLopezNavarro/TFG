@@ -1,28 +1,30 @@
 "use strict";
 var connected= false;
-var nick="";
+var nombre="";
 var flag =false;
-var google_user=false;
 var ConnectionManager={
 	isConnected: function() {
 		var request = new XMLHttpRequest();	
-		request.open("get", "../isConnected.jsp");
+		request.open("get", "../jsp/isConnected.jsp");
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		request.onreadystatechange=function() {
+		request.onreadystatechange = function() {
 			if (request.readyState===4) {
 				var respuesta=JSON.parse(request.responseText);
 				if (respuesta.result==="OK") {
 					connected = true;
-					nick=respuesta.nick;
-				}
-				flag=true;
+					nombre=respuesta.nombre;
+				}	
 			}
+			else if (request.readyState<4){
+				console.log("No ha realizado la peticion con exito");
+			}
+			flag=true;
 		};
 		request.send();	
 	},
 	logout: function(){
 		var request = new XMLHttpRequest();	
-		request.open("get", "../logout.jsp");
+		request.open("get", "../jsp/logout.jsp");
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.onreadystatechange=function() {
 			if (request.readyState===4) {
@@ -34,15 +36,4 @@ var ConnectionManager={
 		};
 		request.send();	
 	},
-	
-	logoutGoogle: function() {
-		alert("desconectado google");
-		ConnectionManager.logout();
-		/*
-	      var auth2 = gapi.auth2.getAuthInstance();
-	      auth2.signOut().then(function () {
-	        console.log('User signed out.');
-	        ConnectionManager.logout();
-	      });*/
-    }
 };
