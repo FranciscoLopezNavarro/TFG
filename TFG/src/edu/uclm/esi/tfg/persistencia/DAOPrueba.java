@@ -16,6 +16,10 @@ public class DAOPrueba {
 		registrarNueva(prueba,orden,n_min,n_corte,n_max,idAsig,broker);
 		pr =new Prueba(prueba,orden,n_min,n_corte,n_max,idAsig);
 		System.out.println("Prueba creada con éxito: " +pr.getTitulo());
+		
+		if(broker.getConex() !=null) 
+			broker.getConex().close();
+		
 		return pr;
 	}
 
@@ -27,7 +31,7 @@ public class DAOPrueba {
 
 		try {
 
-			String consulta = "INSERT * INTO prueba (titulo, orden, n_min, n_corte, n_max, asignatura) VALUES(?,?,?,?,?,?)";
+			String consulta = "INSERT INTO prueba (titulo, orden, n_min, n_corte, n_max, asignatura) VALUES(?, ?, ?, ?, ?, ?)";
 			ps = broker.getConex().prepareStatement(consulta);
 			ps.setString(1, prueba);
 			ps.setInt(2, orden);
@@ -35,13 +39,11 @@ public class DAOPrueba {
 			ps.setDouble(4, n_corte);
 			ps.setDouble(5, n_max);
 			ps.setInt(6, asig);
-			ps.executeQuery();	
+			ps.execute();	
 
 		}catch (Exception e) {
 			System.err.println("Error" + e);
 		}
-		if(broker.getConex() !=null) 
-			broker.getConex().close();
 	}
 
 	private static boolean checkExistPrueba(String prueba, int asig, SQLBroker broker)throws Exception {
@@ -65,11 +67,7 @@ public class DAOPrueba {
 		}catch (Exception e) {
 			System.err.println("Error" + e);
 		}
-		if(broker.getConex() !=null) 
-			broker.getConex().close();
-
 		return exist;
-
 	}
 
 }

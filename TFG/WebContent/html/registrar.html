@@ -24,7 +24,7 @@
 <script src="../js/ConnectionManager.js"></script>
 <!-- Menu -->
 <script src="../js/MenuManager.js"></script>
-
+<script src="../js/registrar.js"></script>
 </head>
 <body>
 	<div id="menu"></div>
@@ -41,7 +41,7 @@
 					<input id="id" name="id" type="text" placeholder="DNI"
 						class="form-control input-md" required=""> <span
 						class="help-block">DNI sin letra (sin 0 a la izquierda en
-						el caso que hay</span>
+						el caso que haya)</span>
 				</div>
 			</div>
 
@@ -49,13 +49,24 @@
 			<div class="form-group">
 				<label class="col-md-4 control-label" for="pwd">Password</label>
 				<div class="col-md-4">
-					<input id="pwd" name="pwd" type="password"
+					<input id="pwd1" name="pwd" type="password"
 						placeholder="***********" class="form-control input-md"
 						required="">
 
 				</div>
 			</div>
 
+			<!-- Password input-->
+			<div class="form-group">
+				<label class="col-md-4 control-label" for="pwd">Repeat
+					password</label>
+				<div class="col-md-4">
+					<input id="pwd2" name="pwd" type="password"
+						placeholder="***********" class="form-control input-md"
+						required="">
+
+				</div>
+			</div>
 			<!-- Text input-->
 			<div class="form-group">
 				<label class="col-md-4 control-label" for="nombre">Nombre</label>
@@ -66,21 +77,11 @@
 				</div>
 			</div>
 
-			<!-- Text input-->
-			<div class="form-group">
-				<label class="col-md-4 control-label" for="apellido">Apellido</label>
-				<div class="col-md-4">
-					<input id="apellido" name="apellido" type="text" placeholder=""
-						class="form-control input-md" required="">
-
-				</div>
-			</div>
-
 			<!-- Button -->
 			<div class="form-group">
 				<label class="col-md-4 control-label" for="submit"></label>
 				<div class="col-md-4">
-					<button id="submit" name="submit" class="btn btn-primary">Registrar</button>
+					<button id="submit" name="submit" class="btn btn-primary" onclick="registrar()">Registrar</button>
 				</div>
 			</div>
 

@@ -1,12 +1,39 @@
 @charset "UTF-8";
-body{ padding:0px;}
+
+body {
+	padding: 0px;
+}
 
 .custom-file-upload input[type="file"] {
-    display: none;
+	display: none;
 }
+
 .custom-file-upload .custom-file-upload {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
-    cursor: pointer;
+	border: 1px solid #ccc;
+	display: inline-block;
+	padding: 6px 12px;
+	cursor: pointer;
+}
+
+@media ( min-width : 768px ) {
+	.grid-divider {
+		position: relative;
+		padding: 0;
+	}
+	.grid-divider>[class*='col-'] {
+	width: 49.333%;
+		position: static;
+	}
+	.grid-divider>[class*='col-']:nth-child(n+2):before {
+	
+		content: "";
+		border-left: 1px solid #DDD;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+	}
+	.col-padding {
+	
+		padding: 0 15px;
+	}
 }

@@ -29,7 +29,13 @@ public class Manager {
 	private ConcurrentHashMap<Integer, Asignatura> asignaturas;
 	private ConcurrentHashMap<Integer, Prueba> pruebas;
 
-	private static class ManagerHolder{
+	private Manager() {
+		this.usuarios = new ConcurrentHashMap<>();
+		this.asignaturas = new ConcurrentHashMap<>();
+		this.pruebas = new ConcurrentHashMap<>();
+
+	}
+	public static class ManagerHolder{
 		static Manager singleton = new Manager();
 	}
 
@@ -37,7 +43,8 @@ public class Manager {
 		return ManagerHolder.singleton;
 	}
 	public Profesor login(String id,String pwd) throws Exception{
-		Profesor user = DAOProfesor.login(Integer.parseInt(id),pwd);
+		Profesor user;
+		user = DAOProfesor.login(Integer.parseInt(id),pwd);
 		if(user != null) {
 			String nombre = user.getNombre();
 			if(nombre != null) {
@@ -51,6 +58,23 @@ public class Manager {
 		return this.usuarios.remove(nombre);
 	}
 
+	public Profesor registrar(String id,String pwd,String nombre) throws Exception{
+		Profesor user = DAOProfesor.insert(Integer.parseInt(id), pwd, nombre);
+		usuarios.put(nombre, user);
+		return  user;
+	}
+	//	public void addRecoverCodePwd(long codigo,String email) {
+	//		this.codePwd.put(codigo, email);
+	//	}
+	//	public void changeRecoverCodePwd(String code,String pwd) {
+	//		Long aux = Long.parseLong(code);
+	//		String email = this.codePwd.remove(aux);
+	//		try {
+	//			DAOUser.changePasswordEmail(email, pwd);
+	//		} catch (Exception e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
 	public static ArrayList<String[]> readExcelFileToArray(File excelFile){    
 		ArrayList<String[]> arrayDatos = new ArrayList<>();
 		InputStream excelStream = null;
@@ -88,8 +112,6 @@ public class Manager {
 	}
 
 	public void leerFichero(File fichero) throws Exception {
-
-
 		String linea="";	
 
 		//Datos necesarios para crear una asignatura
@@ -115,9 +137,9 @@ public class Manager {
 
 		Asignatura asig = DAOAsignatura.registrar(asignatura,curso);
 		if(asig != null) {
-			String nombre_asig = asig.getNombre();
-			if(nombre_asig != null) {
-				asignaturas.put(asig.getId(), asig);
+			int id_asig = asig.getId();
+			if(id_asig != 0) {
+				asignaturas.put(id_asig, asig);
 			}
 		}
 
@@ -194,22 +216,5 @@ public class Manager {
 	}
 }
 
-//public Profesor registrar(int id,String pwd,String nombre, String apellido) throws Exception{
-//Pr user = DAOUser.insert(email, pwd, nick);
-//usuarios.put(nick, user);
-//return  user;
-//}
-//	public void addRecoverCodePwd(long codigo,String email) {
-//		this.codePwd.put(codigo, email);
-//	}
-//	public void changeRecoverCodePwd(String code,String pwd) {
-//		Long aux = Long.parseLong(code);
-//		String email = this.codePwd.remove(aux);
-//		try {
-//			DAOUser.changePasswordEmail(email, pwd);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 
 

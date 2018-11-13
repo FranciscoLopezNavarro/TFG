@@ -27,6 +27,10 @@ public class DAORelacionPrueba {
 		registrarNueva(pr1,pr2,broker);
 		rp =new RelacionPrueba(pr1,pr2);
 		System.out.println("Se ha creado con exito la relacion entre las pruebas "+ pr1 + "y" + pr2);
+		
+		if(broker.getConex() !=null) 
+			broker.getConex().close();
+		
 		return rp;
 	}
 
@@ -48,8 +52,6 @@ public class DAORelacionPrueba {
 		}catch (Exception e) {
 			System.err.println("Error" + e);
 		}
-		if(broker.getConex() !=null) 
-			broker.getConex().close();
 
 		return id;
 	}
@@ -61,17 +63,16 @@ public class DAORelacionPrueba {
 
 		try {
 
-			String consulta = "INSERT * INTO relacionespruebas(prueba1,prueba2) VALUES (?, ?)";
+			String consulta = "INSERT INTO relacionespruebas (prueba1, prueba2) VALUES (?, ?)";
 			ps = broker.getConex().prepareStatement(consulta);
 			ps.setInt(1, pr1);
 			ps.setInt(2, pr2);
-			ps.executeQuery();	
+			ps.execute();	
 
 		}catch (Exception e) {
 			System.err.println("Error" + e);
 		}
-		if(broker.getConex() !=null) 
-			broker.getConex().close();
+		
 	}
 
 	private static boolean checkExistRelacion(int prueba1, int prueba2, SQLBroker broker)throws Exception {
@@ -95,9 +96,6 @@ public class DAORelacionPrueba {
 		}catch (Exception e) {
 			System.err.println("Error" + e);
 		}
-		if(broker.getConex() !=null) 
-			broker.getConex().close();
-
 		return exist;
 	}
 }

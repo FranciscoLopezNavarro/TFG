@@ -1798,6 +1798,7 @@ pre code {
   }
   .col-sm-6 {
     width: 50%;
+    margin-inline-start: 25%;
   }
   .col-sm-5 {
     width: 41.66666667%;
@@ -2072,7 +2073,7 @@ pre code {
     margin-left: 50%;
   }
   .col-md-offset-5 {
-    margin-left: 41.66666667%;
+    margin-left: 38%;
   }
   .col-md-offset-4 {
     margin-left: 33.33333333%;
@@ -3343,7 +3344,7 @@ fieldset[disabled] .btn-warning.focus {
 }
 .btn-danger {
   color: #fff;
-  background-color: #d9534f;
+  background-color:#218ccf;
   border-color: #d43f3a;
 }
 .btn-danger:focus,

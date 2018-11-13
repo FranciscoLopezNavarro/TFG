@@ -6,8 +6,10 @@
 <!-- CSS -->
 <link href="../css/bootstrap.css" rel="stylesheet">
 <link href="../css/bootstrap.min.css" rel="stylesheet">
-<link href = "../css/cargaArchivos.css" rel = "stylesheet">
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="../css/cargaArchivos.css" rel="stylesheet">
+<link
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
 
 <!-- Scripts -->
 <script src="../js/jquery.js"></script>
@@ -21,26 +23,37 @@
 <script src="../js/ConnectionManager.js"></script>
 <!-- Menu -->
 <script src="../js/MenuManager.js"></script>
-<!-- Carga FALTA AÑADIR -->
-<script src="../js/cargaArchivos.js"></script> 
+
 
 </head>
 <body>
 	<div id="menu"></div>
-	<div class="default-file-upload">
-		<h1>Archivo de configuracion</h1>
-
-		<input id="file-upload1" type="file" />
+	<div class="container">
+		<div class="page-header">
+			<h3>Carga de ficheros para el sistema.</h3>
+		</div>
+		<div class="row grid-divider">
+			<div class="col-sm-4">
+				<div class="col-padding">
+					<form method="POST" enctype="multipart/form-data"
+						action="../jsp/cargaArchivos.jsp">
+						<h3>Fichero de configuración</h3>
+						<input type="file" name="upfile"><br /> <br /> <input
+							type="submit" value="Cargar Archivo">
+					</form>
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="col-padding">
+					<form method="POST" enctype="multipart/form-data"
+						action="../jsp/cargaArchivos.jsp">
+						<h3>Fichero Excel</h3>
+						<input type="file" name="upfile"><br /> <br /> <input
+							type="submit" value="Cargar Excel">
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
-	<br>
-	<br>
-	<div class="custom-file-upload">
-		<h1>Archivo Excel de calificaciones</h1>
-		<label for="file-upload" class="custom-file-upload"> <i
-			class="fa fa-cloud-upload"></i> Excel upload
-		</label> <input id="file-upload" type="file" />
-	</div>
-
-
 </body>
 </html>

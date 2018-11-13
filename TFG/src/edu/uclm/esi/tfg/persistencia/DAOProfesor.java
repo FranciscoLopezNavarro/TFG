@@ -10,7 +10,6 @@ public class DAOProfesor {
 		broker.getConex();
 		PreparedStatement ps =null;
 		ResultSet rs = null;
-		System.out.println("Ha llegado hasta aquí");
 		try {
 
 			String consulta = "SELECT * FROM profesor WHERE idProfesor = ? and Password = ?";
@@ -27,9 +26,6 @@ public class DAOProfesor {
 		}catch (Exception e) {
 			System.err.println("Error" + e);
 		}
-		if(broker.getConex() !=null) 
-			broker.getConex().close();
-
 		return exist;
 
 	}
@@ -49,9 +45,8 @@ public class DAOProfesor {
 		PreparedStatement ps =null;
 		ResultSet rs = null;
 		String nombre = null;
-		System.out.println("Ha llegado hasta aquí");
-		try {
 
+		try {
 			String consulta = "SELECT nombre FROM profesor WHERE idProfesor = ?";
 			ps = broker.getConex().prepareStatement(consulta);
 			ps.setInt(1, id);
@@ -65,15 +60,34 @@ public class DAOProfesor {
 		}
 		if(broker.getConex() !=null) 
 			broker.getConex().close();
+
 		return nombre;
+
+
 	}
-	//	public static Profesor insert(int id, String pwd, String nombre, String apellido) throws Exception {
-	//		SQLBroker broker = new SQLBroker();
-	//		if(checkExistUser(id, pwd, broker))//Si el usuario no existe
-	//			throw new Exception("Este usuario ya existe.");
-	//
-	//		return null;
-	//	}
+	public static Profesor insert(int id, String pwd, String nombre) throws Exception {
+		SQLBroker broker = new SQLBroker();
+		PreparedStatement ps =null;
+
+		if(checkExistUser(id, pwd, broker))//Si el usuario no existe
+			throw new Exception("Este usuario ya existe.");
+
+		try {
+			String consulta = "INSERT INTO Profesor (idProfesor, Password, Nombre) VALUES (?, ?, ?);";
+			ps = broker.getConex().prepareStatement(consulta);
+			ps.setInt(1, id);
+			ps.setString(2, pwd);
+			ps.setString(3, nombre);
+			ps.executeUpdate();
+
+		}catch (Exception e) {
+			System.err.println("Error" + e);
+		}
+
+		Profesor user = new Profesor(id,pwd,nombre);
+		return user;	
+
+	}
 
 	//TODO test this method
 	//	public static User insert(String email,String pwd,String nick) throws Exception{

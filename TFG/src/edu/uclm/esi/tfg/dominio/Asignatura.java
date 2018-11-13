@@ -4,8 +4,13 @@ public class Asignatura {
 	private int id;
 	private String nombre;
 	private int curso;
-	
+
 	public Asignatura(String asignatura, int curso) {
+		this.nombre = asignatura;
+		this.curso = curso;
+	}
+	public Asignatura(int id, String asignatura, int curso) {
+		this.id=id;
 		this.nombre = asignatura;
 		this.curso = curso;
 	}
@@ -27,5 +32,5 @@ public class Asignatura {
 	public void setCurso(int curso) {
 		this.curso = curso;
 	}
-	
+
 }
