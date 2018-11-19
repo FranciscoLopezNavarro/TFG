@@ -15,7 +15,7 @@ public class DAOPrueba {
 
 		registrarNueva(prueba,orden,n_min,n_corte,n_max,idAsig,broker);
 		pr =new Prueba(prueba,orden,n_min,n_corte,n_max,idAsig);
-		System.out.println("Prueba creada con éxito: " +pr.getTitulo());
+		//System.out.println("Prueba creada con éxito: " +pr.getTitulo());
 		
 		if(broker.getConex() !=null) 
 			broker.getConex().close();
