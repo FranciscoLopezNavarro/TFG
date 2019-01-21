@@ -7,9 +7,10 @@ public class Prueba {
 		private double n_min;
 		private double n_max;
 		private double n_corte;
-		int asig;
+		private int asig;
 		
-		public Prueba(String titulo, int orden, double n_min, double n_corte, double n_max, int asig) {
+		public Prueba(Integer id,String titulo, int orden, double n_min, double n_corte, double n_max, int asig) {
+			this.id = id;
 			this.titulo = titulo;
 			this.orden = orden;
 			this.n_min = n_min;
@@ -18,6 +19,10 @@ public class Prueba {
 			this.asig = asig;
 			
 		}
+		public Prueba() {
+			// TODO Auto-generated constructor stub
+		}
+		
 		public String getTitulo() {
 			return titulo;
 		}
@@ -53,5 +58,11 @@ public class Prueba {
 		}
 		public void setId(int id) {
 			this.id = id;
+		}
+		public int getAsig() {
+			return asig;
+		}
+		public void setAsig(int asig) {
+			this.asig = asig;
 		}
 }

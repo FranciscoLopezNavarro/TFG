@@ -89,35 +89,6 @@ public class DAOProfesor {
 
 	}
 
-	//TODO test this method
-	//	public static User insert(String email,String pwd,String nick) throws Exception{
-	//		MongoClient db_client =  MongoBroker.get().getBD();
-	//		//Check if the user exists before insert
-	//		if(checkExistUser(email,null,db_client)) {
-	//			MongoBroker.get().close(db_client);
-	//			throw new Exception("Usuario ya registrado");
-	//		}
-	//		UserRegistered user = new UserRegistered(email,pwd);
-	//		if(checkExistNick(nick, db_client)) {
-	//			MongoBroker.get().close(db_client);
-	//			throw new Exception("Este nick ya existe, elige otro");
-	//		}
-	//		user.setNick(nick);
-	//		user.setScore(0);
-	//
-	//		BsonDocument criteria = new BsonDocument();
-	//		criteria.append("email", new BsonString(email));
-	//		criteria.append("pwd", new BsonString(pwd));
-	//		criteria.append("nick", new BsonString(nick));
-	//		criteria.append("score", new BsonInt32(0));
-	//
-	//		MongoDatabase db = db_client.getDatabase("LaOca");
-	//		MongoCollection<BsonDocument> users = db.getCollection("users",BsonDocument.class);
-	//		users.insertOne(criteria);
-	//		MongoBroker.get().close(db_client);
-	//		return user;
-	//	}
-	//	//TODO test this method
 	//	public static boolean changePassword(User user,String newPassword) throws Exception{
 	//		MongoClient db_client =  MongoBroker.get().getBD();
 	//		//Check if the user exists before insert
@@ -138,25 +109,4 @@ public class DAOProfesor {
 	//		MongoBroker.get().close(db_client);
 	//		return true;
 	//	}
-	//	//TODO test this method
-	//
-	//	//TODO Falta hacer un sort cogiendo el mayor score y poniendo un limit en la consulta
-	//
-	//
-	//	public static void changePasswordEmail(String email, String pwd) throws Exception {
-	//		SQLclient db_client =  MongoBroker.get().getBD();
-	//		//Check if the user exists before insert
-	//		BsonDocument criteria = new BsonDocument();
-	//		criteria.append("email", new BsonString(email));
-	//
-	//		BsonDocument updateCirteria = new BsonDocument();
-	//
-	//		updateCirteria.append("$set",new BsonDocument("pwd", new BsonString(pwd)));
-	//
-	//		MongoDatabase db = db_client.getDatabase("LaOca");
-	//		MongoCollection<BsonDocument> users = db.getCollection("users",BsonDocument.class);
-	//		users.updateOne(criteria, updateCirteria);
-	//		MongoBroker.get().close(db_client);
-	//	}
-	//}
 }

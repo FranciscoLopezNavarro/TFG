@@ -14,6 +14,9 @@ public class Asignatura {
 		this.nombre = asignatura;
 		this.curso = curso;
 	}
+	public Asignatura() {
+		// TODO Auto-generated constructor stub
+	}
 	public int getId() {
 		return id;
 	}

@@ -1,53 +1,36 @@
 "use strict";
-$(document).ready(function () {
+//Get select object
 
-	function exportTableToCSV($table, filename) {
 
-		var $rows = $table.find('tr:has(td)'),
+function seleccion() {
+	var objSelect = document.getElementById("comboAsignaturas");
 
-		// Temporary delimiter characters unlikely to be typed by keyboard
-		// This is to avoid accidentally splitting the actual contents
-		tmpColDelim = String.fromCharCode(11), // vertical tab character
-		tmpRowDelim = String.fromCharCode(0), // null character
+	//Set selected
+	var selectedOption = objSelect.options[objSelect.selectedIndex].value;
+	//console.log(selectedOption)
 
-		// actual delimiter characters for CSV format
-		colDelim = '","',
-		rowDelim = '"\r\n"',
-
-		// Grab text from table into CSV formatted string
-		csv = '"' + $rows.map(function (i, row) {
-			var $row = $(row),
-			$cols = $row.find('td');
-
-			return $cols.map(function (j, col) {
-				var $col = $(col),
-				text = $col.text();
-
-				return text.replace('"', '""'); // escape double quotes
-
-			}).get().join(tmpColDelim);
-
-		}).get().join(tmpRowDelim)
-		.split(tmpRowDelim).join(rowDelim)
-		.split(tmpColDelim).join(colDelim) + '"',
-
-		// Data URI
-		csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-
-		$(this)
-		.attr({
-			'download': filename,
-			'href': csvData,
-			'target': '_blank'
-		});
+	if(selectedOption =>1){
+		console.log("index es 1 o mas ");	
+		//setTimeout("actualizar()",2000);
+		mostrarAsigElegida(objSelect.options[objSelect.selectedIndex].text);
 	}
 
-	// This must be a hyperlink
-	$(".export").on('click', function (event) {
-		// CSV
-		exportTableToCSV.apply(this, [$('#dvData>table'), 'export.csv']);
+}
 
-		// IF CSV, don't do event.preventDefault() or return false
-		// We actually need this to be a typical hyperlink
-	});
-});
+function mostrarAsigElegida(asignatura) {
+
+	var div = document.getElementById("tituloAsignatura");
+	div.style.display ='';
+	$('br').remove();
+	document.getElementById("asigElegida").innerHTML = "Asignatura elegida: " + asignatura;
+	
+}
+
+function cerrarAsigElegida() {
+	div = document.getElementById("tituloAsignatura");
+	div.style.display='none';
+}
+
+//Función para actualizar cada 4 segundos(4000 milisegundos)
+function actualizar(){location.reload(true);}
+window.setInterval("actualizar()",300000);

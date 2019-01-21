@@ -3,6 +3,7 @@ package edu.uclm.esi.tfg.persistencia;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import edu.uclm.esi.tfg.dominio.RelacionPrueba;
 
@@ -26,7 +27,6 @@ public class DAORelacionPrueba {
 
 		registrarNueva(pr1,pr2,broker);
 		rp =new RelacionPrueba(pr1,pr2);
-		System.out.println("Se ha creado con exito la relacion entre las pruebas "+ pr1 + "y" + pr2);
 		
 		if(broker.getConex() !=null) 
 			broker.getConex().close();
@@ -82,7 +82,7 @@ public class DAORelacionPrueba {
 		ResultSet rs = null;
 
 		try {
-			String consulta = "SELECT * FROM asignatura WHERE prueba1 = ? and prueba2 = ?";
+			String consulta = "SELECT * FROM relacionespruebas WHERE prueba1 = ? and prueba2 = ?";
 			ps = broker.getConex().prepareStatement(consulta);
 			ps.setInt(1, prueba1);
 			ps.setInt(2, prueba2);
@@ -97,5 +97,33 @@ public class DAORelacionPrueba {
 			System.err.println("Error" + e);
 		}
 		return exist;
+	}
+
+	public static ArrayList<RelacionPrueba> cargar() {
+		SQLBroker broker = new SQLBroker();
+		broker.getConex();
+		ArrayList<RelacionPrueba> relaciones = new ArrayList<RelacionPrueba>();
+		RelacionPrueba relacion;
+		PreparedStatement ps =null;
+		ResultSet rs = null;
+		try {
+
+			String consulta = "SELECT * FROM RelacionesPruebas";
+			ps = broker.getConex().prepareStatement(consulta);
+			rs = ps.executeQuery();
+
+			while(rs.next()) {
+				relacion = new RelacionPrueba();
+				relacion.setPrueba1(rs.getInt("Prueba1"));
+				relacion.setPrueba2(rs.getInt("Prueba2"));
+				
+
+				relaciones.add(relacion);
+			}
+		}catch (Exception e) {
+			System.err.println("Error" + e);
+		}
+
+		return relaciones;
 	}
 }

@@ -2,6 +2,8 @@ package edu.uclm.esi.tfg.persistencia;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import edu.uclm.esi.tfg.dominio.Prueba;
 
@@ -14,12 +16,13 @@ public class DAOPrueba {
 			throw new Exception("Esta prueba ya existe en la BBDD");//Si la asignatura ya existe
 
 		registrarNueva(prueba,orden,n_min,n_corte,n_max,idAsig,broker);
-		pr =new Prueba(prueba,orden,n_min,n_corte,n_max,idAsig);
-		//System.out.println("Prueba creada con éxito: " +pr.getTitulo());
+		int id =obtenerIdPrueba(prueba,idAsig,broker);
 		
+		pr =new Prueba(id,prueba,orden,n_min,n_corte,n_max,idAsig);
+
 		if(broker.getConex() !=null) 
 			broker.getConex().close();
-		
+
 		return pr;
 	}
 
@@ -70,4 +73,58 @@ public class DAOPrueba {
 		return exist;
 	}
 
+	private static int obtenerIdPrueba(String prueba, int asignatura, SQLBroker broker) throws SQLException {
+		broker.getConex();
+		PreparedStatement ps =null;
+		ResultSet rs = null;
+		int id = 0;
+		try {
+			String consulta = "SELECT idPrueba FROM prueba WHERE titulo = ? and asignatura = ?";
+			ps = broker.getConex().prepareStatement(consulta);
+			ps.setString(1, prueba);
+			ps.setInt(2, asignatura);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				id = rs.getInt(1);
+			}
+
+		}catch (Exception e) {
+			System.err.println("Error" + e);
+		}
+
+		return id;
+	}
+	public static ArrayList<Prueba> cargar() {
+		SQLBroker broker = new SQLBroker();
+		broker.getConex();
+		ArrayList<Prueba> pruebas = new ArrayList<Prueba>();
+		Prueba prueba;
+		PreparedStatement ps =null;
+		ResultSet rs = null;
+		try {
+
+			String consulta = "SELECT * FROM prueba";
+			ps = broker.getConex().prepareStatement(consulta);
+			rs = ps.executeQuery();
+
+			while(rs.next()) {
+				prueba = new Prueba();
+				prueba.setId(rs.getInt("idPrueba"));
+				prueba.setTitulo(rs.getString("Titulo"));
+				prueba.setOrden(rs.getInt("Orden"));
+				prueba.setN_min(rs.getDouble("n_min"));
+				prueba.setN_corte(rs.getInt("n_corte"));
+				prueba.setN_max(rs.getInt("n_max"));
+				prueba.setAsig(rs.getInt("Asignatura"));
+
+				pruebas.add(prueba);
+			}
+		}catch (Exception e) {
+			System.err.println("Error" + e);
+		}
+
+		return pruebas;
+	}
 }
+

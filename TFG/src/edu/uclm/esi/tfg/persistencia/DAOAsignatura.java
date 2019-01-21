@@ -3,6 +3,7 @@ package edu.uclm.esi.tfg.persistencia;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import edu.uclm.esi.tfg.dominio.Asignatura;
 
@@ -49,7 +50,7 @@ public class DAOAsignatura {
 		return id;
 	}
 
-	private static void registrarNueva(String asignatura, int curso, SQLBroker broker)throws Exception{
+	private static void registrarNueva(String asignatura, int curso, SQLBroker broker)throws SQLException{
 		broker.getConex();
 		PreparedStatement ps =null;
 
@@ -67,7 +68,7 @@ public class DAOAsignatura {
 
 	}
 
-	private static boolean checkExistAsignatura(String asignatura, int curso, SQLBroker broker)throws Exception {
+	private static boolean checkExistAsignatura(String asignatura, int curso, SQLBroker broker)throws SQLException{
 		boolean exist = false;
 		broker.getConex();
 		PreparedStatement ps =null;
@@ -92,4 +93,32 @@ public class DAOAsignatura {
 
 	}
 
+	public static ArrayList<Asignatura> cargar() {
+		SQLBroker broker = new SQLBroker();
+		broker.getConex();
+		ArrayList<Asignatura> asignaturas = new ArrayList<Asignatura>();
+		Asignatura asignatura;
+		PreparedStatement ps =null;
+		ResultSet rs = null;
+		try {
+
+			String consulta = "SELECT * FROM asignatura";
+			ps = broker.getConex().prepareStatement(consulta);
+			rs = ps.executeQuery();
+
+			while(rs.next()) {
+				asignatura = new Asignatura();
+				asignatura.setId(rs.getInt("idAsignatura"));
+				asignatura.setNombre(rs.getString("Nombre"));
+				asignatura.setCurso(rs.getInt("Curso"));
+				
+				asignaturas.add(asignatura);
+			}
+		}catch (Exception e) {
+			System.err.println("Error" + e);
+		}
+
+		return asignaturas;
+	}
 }
+

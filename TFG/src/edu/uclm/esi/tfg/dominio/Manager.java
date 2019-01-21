@@ -6,33 +6,41 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import edu.uclm.esi.tfg.persistencia.DAOAlumno;
 import edu.uclm.esi.tfg.persistencia.DAOAsignatura;
+import edu.uclm.esi.tfg.persistencia.DAOCalificacion;
 import edu.uclm.esi.tfg.persistencia.DAOProfesor;
 import edu.uclm.esi.tfg.persistencia.DAOPrueba;
 import edu.uclm.esi.tfg.persistencia.DAORelacionPrueba;
 
 public class Manager {
 	private ConcurrentHashMap<String, Profesor> usuarios;
-	private ConcurrentHashMap<Integer, Asignatura> asignaturas;
-	private ConcurrentHashMap<Integer, Prueba> pruebas;
+	private ArrayList<Asignatura> asignaturas = new ArrayList<Asignatura>();
+	private ArrayList<Alumno> alumnos = new ArrayList<Alumno>();
+	private ArrayList<Prueba> pruebas = new ArrayList<Prueba>();
+	private ArrayList<RelacionPrueba> relacionesPruebas = new ArrayList<RelacionPrueba>();
+	private ArrayList<Calificacion> calificaciones = new ArrayList<Calificacion>();
 
 	private Manager() {
 		this.usuarios = new ConcurrentHashMap<>();
-		this.asignaturas = new ConcurrentHashMap<>();
-		this.pruebas = new ConcurrentHashMap<>();
+		this.asignaturas = new ArrayList<>();
+		this.alumnos = new ArrayList<>();
+		this.pruebas = new ArrayList<>();
+		this.relacionesPruebas = new ArrayList<>();
+		this.calificaciones = new ArrayList<>();
 
 	}
 	public static class ManagerHolder{
@@ -75,43 +83,74 @@ public class Manager {
 	//			// TODO Auto-generated catch block
 	//			e.printStackTrace();
 	//		}
-	public static ArrayList<String[]> readExcelFileToArray(File excelFile){    
-		ArrayList<String[]> arrayDatos = new ArrayList<>();
-		InputStream excelStream = null;
+	@SuppressWarnings("deprecation")
+	public void readExcelFile(File excelFile)throws Exception{  
+
+		ArrayList<String> nombrePruebas = new ArrayList<String>();
+
+
 		try {
-			String rutaArchivoExcel = "Asignatura_Informatica.xlsx";
-			FileInputStream inputStream = new FileInputStream(new File(rutaArchivoExcel));
+			FileInputStream inputStream = new FileInputStream(excelFile);
 
 			Workbook workbook = new XSSFWorkbook(inputStream);
 			Sheet firstSheet = workbook.getSheetAt(0);
 
 			Iterator<Row> iterator = firstSheet.iterator();
 			DataFormatter formatter = new DataFormatter();
+			//Bucle para las filas
 			while (iterator.hasNext()) {
 				Row nextRow = iterator.next();
+				int rowIndex = nextRow.getRowNum();
 				Iterator<Cell> cellIterator = nextRow.cellIterator();
-				while(cellIterator.hasNext()) {
-					Cell cell = cellIterator.next();
-					String contenidoCelda = formatter.formatCellValue(cell);
-					System.out.println("celda: " + contenidoCelda);
-				}
-				//DAOCALIFICACION
-			}    
+
+				//Vamos a leer la primera linea que nos dira el numero de pruebas que tiene la asignatura así como su nombre
+				if(rowIndex == 0) {
+					//Se descartan las 2 primeras columnas que corresponden al Nº de alumno y al año, vendrá así en todos los excel de notas
+					cellIterator.next();
+					cellIterator.next();
+					//Comprobamos el numero de pruebas que corresponden a esa asignatura
+					while(cellIterator.hasNext()) {
+						String contenidoCelda = formatter.formatCellValue(cellIterator.next());
+						nombrePruebas.add(contenidoCelda);
+					}
+
+				}else {
+					//AQUI VAMOS LEYENDO EL PRIMER ELEMENTO DE CADA FILA (ID ALUMNO) Y CREANDO LOS ALUMNOS EN LA BD
+
+					int id = Integer.parseInt(formatter.formatCellValue(cellIterator.next()));
+					registrarAlumno(id);
+
+					//AHORA LEEMOS LAS SIGUIENTES CELDAS DE LA FILA, EL SEGUNDO VALOR SERA EL AÑO Y DESPUES SE LEEN TANTAS CELDAS COMO PRUEBAS HAYAMOS LEIDO EN LA PRIMERA LINEA
+					//Bucle para las celdas
+					Double nota;
+					String año = formatter.formatCellValue(cellIterator.next());
+
+					for(int x=0;x<nombrePruebas.size();x++) {
+						Cell celda = cellIterator.next();
+						if(celda.getCellTypeEnum() == CellType.STRING) {
+							System.out.println("Esta celda tiene NP");
+							nota = 0.0;
+						}else{
+							nota = Double.parseDouble(formatter.formatCellValue(celda).replaceAll(",", "."));
+						}
+						registrarCalificación(id,getIdPruebas(nombrePruebas.get(x)),año,nota);
+
+					}
+
+				} 
+			}
 		} catch (FileNotFoundException fileNotFoundException) {
 			System.out.println("The file not exists (No se encontró el fichero): " + fileNotFoundException);
 		} catch (IOException ex) {
 			System.out.println("Error in file procesing (Error al procesar el fichero): " + ex);
-		} finally {
-			try {
-				excelStream.close();
-			} catch (IOException ex) {
-				System.out.println("Error in file processing after close it (Error al procesar el fichero después de cerrarlo): " + ex);
-			}
-		}
-		return arrayDatos;
+		}catch(NullPointerException e) {
+			System.out.println("Se ha leido el archivo completo" + e);
+		} 
+		System.out.println("ARCHIVO DE NOTAS CARGADO CON ÉXITO");
+		//return arrayDatos;
 	}
 
-	public void leerFichero(File fichero) throws Exception {
+	public void leerFichero(File fichero) throws Exception{
 		String linea="";	
 
 		//Datos necesarios para crear una asignatura
@@ -123,28 +162,20 @@ public class Manager {
 		double N_min;
 		double N_corte;
 		double N_max;
+
 		//Datos necesarios para crear una relacion entre pruebas
 		String prueba1;
 		String prueba2;
 
 		//Aqui sacamos los datos de la asignatura (nombre y curso) del nombre del fichero
+
 		StringTokenizer st = new StringTokenizer(fichero.getName(), "_");
 		asignatura= st.nextToken();
 		curso = Integer.parseInt(st.nextToken());
-
-		System.out.println("Asignatura: "+ asignatura +" Curso:" + curso + "º");
-
-
 		Asignatura asig = DAOAsignatura.registrar(asignatura,curso);
 		if(asig != null) {
-			int id_asig = asig.getId();
-			if(id_asig != 0) {
-				asignaturas.put(id_asig, asig);
-			}
+			updateAsignaturas(asig);
 		}
-
-		//Recorremos todo el fichero haciendo un token de cada linea
-
 		// Ya hemos terminado de trabajar con el nombre del fichero, pasamos a hacerlo con su contenido
 		StringTokenizer stSaltoLinea = new StringTokenizer(getContenidoFichero(fichero),"/");
 
@@ -155,9 +186,11 @@ public class Manager {
 			linea = linea.replaceAll(" ;",";");
 
 			StringTokenizer stPuntoComa = new StringTokenizer(linea,";");
+
 			//Si el primer elemento es % todo lo que viene a continuación hasta el siguiente salto de linea
 			//es información referente a una asignatura. En cambio si viene # será información referente a 
 			//relaciones entre pruebas
+
 			if(linea.startsWith("%")) {
 
 				//Despreciamos el primer token ya que solo nos sirve para identificar la informacion que viene a continuacion
@@ -169,13 +202,7 @@ public class Manager {
 				N_corte = Double.parseDouble(stPuntoComa.nextToken());
 				N_max = Double.parseDouble(stPuntoComa.nextToken());
 
-				Prueba pr = DAOPrueba.registrar(prueba,orden,N_min,N_corte, N_max, asig.getId());
-				if(pr != null) {
-					String nombre_pr = pr.getTitulo();
-					if(nombre_pr != null) {
-						pruebas.put(pr.getId(), pr);
-					}
-				}
+				registrarPrueba(prueba,orden,N_min,N_corte, N_max,asig.getId());
 			}
 			else if(linea.startsWith("#")) {
 				//Despreciamos el primer token ya que solo nos sirve para identificar la informacion que viene a continuacion
@@ -183,14 +210,111 @@ public class Manager {
 
 				prueba1 =stPuntoComa.nextToken();
 				prueba2 =stPuntoComa.nextToken();
-				System.out.println("Es una relacion entre las pruebas " + prueba1 + "y" + prueba2);
 
-				RelacionPrueba rp = DAORelacionPrueba.registrar(prueba1,prueba2);
+				try {
+					registrarRelacionPrueba(prueba1, prueba2);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-		System.out.println("Done");
+		System.out.println("ARCHIVO DE CONFIGURACION CARGADO CON EXITO");
 	}
 
+	public void cargarDatos() {
+		cargarAsignaturas();
+		cargarPruebas();
+		cargarRelaciones();
+		cargarAlumnos();
+		cargarCalificaciones();
+	}
+
+	private void cargarAsignaturas() {
+		asignaturas = DAOAsignatura.cargar();
+	}
+	private void cargarAlumnos() {
+		alumnos = DAOAlumno.cargar();
+	}
+
+	private void cargarPruebas() {
+		pruebas = DAOPrueba.cargar();
+	}
+
+	private void cargarRelaciones() {
+		relacionesPruebas = DAORelacionPrueba.cargar();
+	}
+	private void cargarCalificaciones() {
+		calificaciones = DAOCalificacion.cargar();
+
+	}
+	private Integer getIdPruebas(String nombrePrueba) {
+		int id=0;
+		for(int i=0;i<pruebas.size();i++) {
+			if(pruebas.get(i).getTitulo().equals(nombrePrueba)) {
+				id = pruebas.get(i).getId();
+			}
+		}
+
+		return id;
+	}
+
+	private void registrarCalificación(Integer alumno, Integer idPrueba, String año, Double nota) throws Exception {
+		Calificacion cali = DAOCalificacion.registrar(alumno,idPrueba,nota,año);
+		updateCalificaciones(cali);
+	}
+
+
+	private void registrarAlumno(int id) throws Exception {
+		Alumno alu = DAOAlumno.registrar(id);
+		updateAlumnos(alu);
+	}
+
+
+	private void registrarRelacionPrueba(String prueba1, String prueba2) throws Exception{
+		RelacionPrueba rp = DAORelacionPrueba.registrar(prueba1,prueba2);
+		updateRelaciones(rp);
+	}
+
+
+	private void registrarPrueba(String prueba, int orden, double n_min, double n_corte, double n_max, int asig) throws Exception {
+		Prueba pr = DAOPrueba.registrar(prueba,orden,n_min,n_corte, n_max, asig);
+		updatePruebas(pr);
+	}
+
+	private void updateAsignaturas(Asignatura asig) {
+		if(asig!=null) {
+			asignaturas.add(asig);
+		}
+	}
+
+	private void updateCalificaciones(Calificacion cali) {
+		if(cali != null) {
+			calificaciones.add(cali);
+		}
+	}
+
+	private void updateAlumnos(Alumno alu) {
+		if(alu != null) {
+			alumnos.add(alu);
+		}
+	}
+
+	private void updatePruebas(Prueba pr) {
+		if(pr != null) {
+			pruebas.add(pr);
+		}
+	}
+
+	private void updateRelaciones(RelacionPrueba rp) {
+		if(rp != null) {
+			relacionesPruebas.add(rp);
+		}
+	}
+
+	public ArrayList<Asignatura> getAsignaturas() {
+		return asignaturas;
+	}
 	public static String getContenidoFichero(File fichero) {
 
 		StringBuffer buffer = new StringBuffer();

@@ -1,0 +1,37 @@
+div#acercaDe {
+	margin-top: 3%;
+	margin-left: 5%;
+}
+
+p#introduccion {
+	margin-left: 3%;
+	margin-top: 2%;
+	font-size: 16px;
+	margin-right: 20%;
+}
+
+h2 {
+	font-size: 40px;
+	text-align: left;
+}
+
+div#descargaMemoria {
+	text-align: left;
+	margin-left: 8%;
+	font-size: 16px;
+	margin-top: 2%;
+}
+
+div#descargaManual {
+	text-align: left;
+	margin-left: 8%;
+	font-size: 16px;
+	margin-top: 2%;
+}
+
+div#manual {
+	text-align: center;
+	margin-left: 7%;
+	margin-right: 7%;
+}
+}

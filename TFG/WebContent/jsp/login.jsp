@@ -13,6 +13,8 @@
 			session.setAttribute("user", user);
 			respuesta.put("result", "OK");
 			respuesta.put( id , " conectado");
+			
+			Manager.get().cargarDatos();
 		} else {
 			respuesta.put("result", "ERROR");
 			respuesta.put("mensaje", "Usuario o contraseña incorrectos");

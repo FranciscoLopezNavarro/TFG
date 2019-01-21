@@ -3,9 +3,9 @@
 }
 .divIntroduccion{
   margin-top: 5%;
-    font-size: 2em;
+    font-size: 2.3em;
     font-family: arial;
-    margin-inline-start: 25%;
+   text-align: center;
 }
 .nombres{
   margin-top: 35%;

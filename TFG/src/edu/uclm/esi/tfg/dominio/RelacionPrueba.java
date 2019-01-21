@@ -9,6 +9,10 @@ public class RelacionPrueba {
 		this.setPrueba2(pr2);
 	}
 
+	public RelacionPrueba() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getPrueba1() {
 		return prueba1;
 	}
