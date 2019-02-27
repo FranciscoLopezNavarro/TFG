@@ -17,10 +17,12 @@ function validate(){
 			if(respuesta.result ==="OK"){
 				location.href="../html/main.html";
 				console.log("Se ha loggeado con exito");
+				
 			}else{
 				alert(respuesta.mensaje);
 			}
 		}
+		return false;
 	};
 	request.send("login="+JSON.stringify(login));
 	console.log(JSON.stringify(login));

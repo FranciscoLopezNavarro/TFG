@@ -18,6 +18,7 @@
 <link
 	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
 	rel="stylesheet" id="bootstrap-css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="../css/tabpanels.css" rel="stylesheet">
 
 <!-- Scripts -->
@@ -41,22 +42,20 @@
 <!-- Menu -->
 <script src="../js/MenuManager.js"></script>
 
-
-
 </head>
 <body>
 	<div id="menu"></div>
 	<div class="row">
 		<div class="col-md-6 mb-3">
-			<label for="validationCustom03">Asignatura:</label>
-			 <select
+			<label for="validationCustom03">Asignatura:</label> <select
 				class="form-control form-control-lg" name="category"
-				id="comboAsignaturas" onchange="seleccion()">
+				id="comboAsignaturas" onchange="seleccion(this)">
 				<%
 					ArrayList<Asignatura> asignaturas = Manager.get().getAsignaturas();
 				%>
 
-				<option value="" disabled selected hidden>Selecciona una asignatura</option>
+				<option value="" disabled selected hidden>Selecciona una
+					asignatura</option>
 				<%
 					for (int i = 0; i < asignaturas.size(); i++) {
 						String asignatura = (String) asignaturas.get(i).getNombre();
@@ -70,8 +69,8 @@
 		</div>
 	</div>
 	<br />
-	<div id = "tituloAsignatura" style="display:none">
-	<h3 id="asigElegida"></h3>
+	<div id="tituloAsignatura" style="display: none">
+		<h3 id="asigElegida"></h3>
 	</div>
 	<div class="tabs">
 		<div class="tab-button-outer">
@@ -89,15 +88,19 @@
 
 		<div id="historico" class="tab-contents">
 			<h2>Histórico</h2>
-			<p>Aquí se muestran todas las notas de los alumnos de años
+			<p id = "p_historico">Aquí se muestran todas las notas de los alumnos de años
 				anteriores pertenecientes a la asignatura seleccionada. Por favor,
 				seleccione una asignatura.</p>
+			<div id="divtablaHistorico"
+				style="height: 550px; overflow-y: scroll;"></div>
 		</div>
 		<div id="curso_actual" class="tab-contents">
 			<h2>Curso actual</h2>
-			<p>Aquí se muestran las notas de los alumnos que cursan la
+			<p id = "p_actual">Aquí se muestran las notas de los alumnos que cursan la
 				asignatura seleccionada en el curso actual. Por favor, seleccione
 				una asignatura.</p>
+			<div id="divtablaCursoActual"
+				style="height: 550px; overflow-y: scroll;"></div>
 		</div>
 	</div>
 </body>

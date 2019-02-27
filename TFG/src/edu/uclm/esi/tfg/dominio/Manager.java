@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -83,8 +84,8 @@ public class Manager {
 	//			// TODO Auto-generated catch block
 	//			e.printStackTrace();
 	//		}
-	@SuppressWarnings("deprecation")
-	public void readExcelFile(File excelFile)throws Exception{  
+
+	public void readExcelFile(File excelFile){  
 
 		ArrayList<String> nombrePruebas = new ArrayList<String>();
 
@@ -101,43 +102,54 @@ public class Manager {
 			while (iterator.hasNext()) {
 				Row nextRow = iterator.next();
 				int rowIndex = nextRow.getRowNum();
-				Iterator<Cell> cellIterator = nextRow.cellIterator();
 
-				//Vamos a leer la primera linea que nos dira el numero de pruebas que tiene la asignatura así como su nombre
-				if(rowIndex == 0) {
-					//Se descartan las 2 primeras columnas que corresponden al Nº de alumno y al año, vendrá así en todos los excel de notas
-					cellIterator.next();
-					cellIterator.next();
-					//Comprobamos el numero de pruebas que corresponden a esa asignatura
-					while(cellIterator.hasNext()) {
-						String contenidoCelda = formatter.formatCellValue(cellIterator.next());
-						nombrePruebas.add(contenidoCelda);
-					}
+				if(isRowEmpty(nextRow)==false) {
+					Iterator<Cell> cellIterator = nextRow.cellIterator();
 
-				}else {
-					//AQUI VAMOS LEYENDO EL PRIMER ELEMENTO DE CADA FILA (ID ALUMNO) Y CREANDO LOS ALUMNOS EN LA BD
-
-					int id = Integer.parseInt(formatter.formatCellValue(cellIterator.next()));
-					registrarAlumno(id);
-
-					//AHORA LEEMOS LAS SIGUIENTES CELDAS DE LA FILA, EL SEGUNDO VALOR SERA EL AÑO Y DESPUES SE LEEN TANTAS CELDAS COMO PRUEBAS HAYAMOS LEIDO EN LA PRIMERA LINEA
-					//Bucle para las celdas
-					Double nota;
-					String año = formatter.formatCellValue(cellIterator.next());
-
-					for(int x=0;x<nombrePruebas.size();x++) {
-						Cell celda = cellIterator.next();
-						if(celda.getCellTypeEnum() == CellType.STRING) {
-							System.out.println("Esta celda tiene NP");
-							nota = 0.0;
-						}else{
-							nota = Double.parseDouble(formatter.formatCellValue(celda).replaceAll(",", "."));
+					//Vamos a leer la primera linea que nos dira el numero de pruebas que tiene la asignatura así como su nombre
+					if(rowIndex == 0) {
+						//Se descartan las 2 primeras columnas que corresponden al Nº de alumno y al año, vendrá así en todos los excel de notas
+						cellIterator.next();
+						cellIterator.next();
+						//Comprobamos el numero de pruebas que corresponden a esa asignatura
+						while(cellIterator.hasNext()) {
+							String contenidoCelda = formatter.formatCellValue(cellIterator.next());
+							nombrePruebas.add(contenidoCelda);
 						}
-						registrarCalificación(id,getIdPruebas(nombrePruebas.get(x)),año,nota);
 
-					}
+					}else {
+						//AQUI VAMOS LEYENDO EL PRIMER ELEMENTO DE CADA FILA (ID ALUMNO) Y CREANDO LOS ALUMNOS EN LA BD
 
-				} 
+						int id = Integer.parseInt(formatter.formatCellValue(cellIterator.next()));
+						try {
+							registrarAlumno(id);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						//AHORA LEEMOS LAS SIGUIENTES CELDAS DE LA FILA, EL SEGUNDO VALOR SERA EL AÑO Y DESPUES SE LEEN TANTAS CELDAS COMO PRUEBAS HAYAMOS LEIDO EN LA PRIMERA LINEA
+						//Bucle para las celdas
+						Double nota;
+						String año = formatter.formatCellValue(cellIterator.next());
+
+						for(int x=0;x<nombrePruebas.size();x++) {
+							Cell celda = cellIterator.next();
+							if(celda.getCellTypeEnum() == CellType.STRING) {
+								nota = -1.0;
+							}else{
+								nota = Double.parseDouble(formatter.formatCellValue(celda).replaceAll(",", "."));
+							}
+							try {
+								registrarCalificación(id,getIdPruebas(nombrePruebas.get(x)),año,nota);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+						}
+					} 
+				}
 			}
 		} catch (FileNotFoundException fileNotFoundException) {
 			System.out.println("The file not exists (No se encontró el fichero): " + fileNotFoundException);
@@ -145,10 +157,24 @@ public class Manager {
 			System.out.println("Error in file procesing (Error al procesar el fichero): " + ex);
 		}catch(NullPointerException e) {
 			System.out.println("Se ha leido el archivo completo" + e);
-		} 
+		}
 		System.out.println("ARCHIVO DE NOTAS CARGADO CON ÉXITO");
-		//return arrayDatos;
 	}
+
+	private boolean isRowEmpty(Row nextRow) {
+		if (nextRow == null) {
+			return true;
+		}
+		if (nextRow.getLastCellNum() <= 0) {
+			return true;
+		}
+		for (int cellNum = nextRow.getFirstCellNum(); cellNum < nextRow.getLastCellNum(); cellNum++) {
+			Cell cell = nextRow.getCell(cellNum);
+			if (cell != null && cell.getCellTypeEnum() != CellType.BLANK) {
+				return false;
+			}
+		}
+		return true;	}
 
 	public void leerFichero(File fichero) throws Exception{
 		String linea="";	
@@ -315,6 +341,69 @@ public class Manager {
 	public ArrayList<Asignatura> getAsignaturas() {
 		return asignaturas;
 	}
+
+	public ArrayList<Prueba> getPruebasAsignatura(Integer asignatura) {
+		ArrayList<Prueba> pruebas_aux = new ArrayList<Prueba>();
+		for(int i=0;i<pruebas.size();i++) {
+			if(pruebas.get(i).getAsig() == asignatura) {
+				pruebas_aux.add(pruebas.get(i));
+			}
+		}
+		return pruebas_aux;
+	}
+
+	public ArrayList<Calificacion> getCalificacionesAlumno(Integer idalumno) {
+		ArrayList<Calificacion> calificaciones_aux = new ArrayList<Calificacion>();
+		for(int i=0;i<calificaciones.size();i++) {
+			if(calificaciones.get(i).getAlumno() == idalumno) {
+				calificaciones_aux.add(calificaciones.get(i));
+			}
+		}
+
+
+		return calificaciones_aux;
+	}
+
+	public ArrayList<Calificacion> getCalificacionesPruebas(ArrayList<Prueba> pruebas) {
+
+		ArrayList<Calificacion> calificaciones_aux = new ArrayList<Calificacion>();
+		for(int i=0;i<calificaciones.size();i++) {
+			for(int j =0; j< pruebas.size();j++) {
+				if(calificaciones.get(i).getPrueba() == pruebas.get(j).getId()) {
+					calificaciones_aux.add(calificaciones.get(i));
+				}
+			}
+		}
+		return calificaciones_aux;
+	}
+	public ArrayList<Calificacion> getCalificacionesPruebasCursoActual(ArrayList<Prueba> pruebas, String curso_actual) {
+
+		ArrayList<Calificacion> calificaciones_aux = new ArrayList<Calificacion>();
+		for(int i=0;i<calificaciones.size();i++) {
+			for(int j =0; j< pruebas.size();j++) {
+				if(calificaciones.get(i).getPrueba() == pruebas.get(j).getId() && calificaciones.get(i).getYear().equals(curso_actual)) {
+					calificaciones_aux.add(calificaciones.get(i));
+				}
+			}
+		}
+		return calificaciones_aux;
+	}
+
+	public ArrayList<Alumno> getCalificacionesAlumnos(ArrayList<Calificacion> calificaciones) {
+
+		ArrayList<Alumno> alumnos_aux = new ArrayList<Alumno>();
+		for(int i=0;i<alumnos.size();i++) {
+			for(int j =0; j< calificaciones.size();j++) {
+				if(alumnos.get(i).getId() == calificaciones.get(j).getAlumno()) {
+					alumnos_aux.add(alumnos.get(i));
+				}
+			}
+		}
+		return alumnos_aux;
+	}
+	public ArrayList<Alumno> getAlumnos() {
+		return alumnos;
+	}
 	public static String getContenidoFichero(File fichero) {
 
 		StringBuffer buffer = new StringBuffer();
@@ -338,6 +427,7 @@ public class Manager {
 
 		return buffer.toString();
 	}
+
 }
 
 
