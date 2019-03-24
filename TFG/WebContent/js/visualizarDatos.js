@@ -9,48 +9,100 @@ function seleccion() {
 
 $("input").change(function(){
     alert("The text has been changed.");
-  }); 
+}); 
 function addRow()
 {
-  
-    $("#tr_clone").clone(true).appendTo("#tablaCursoActual"); 
-//    var new_name=document.getElementById("alumno").value;
-//    var new_country=document.getElementById("prueba").value;
-//    var new_age=document.getElementById("riesgo").value;
-//
-//    var table=document.getElementById("tablaCursoActual");
-//    var table_len=(table.rows.length);
-//    var row = table.insertRow(table_len).outerHTML=
-//	"<tr id='row"+table_len+"'>" +
-//	"<td contenteditable='true' id='alumno'></td>" +
-//	"<td contenteditable='true' id='prueba'></td>" +
-//	"<td contenteditable='true' id='riesgo'></td><td>" +
-//	"<a><i class='fa fa-save' onclick='saveRow()'></i></a>" +
-//	"<a><i class='fa fa-trash' onclick='deleteRow(this)'></i></a>" +
-//	"</td>" +
-//	"</tr>";
 
-    
+    // make a copy of an existing row. We choose the last row of table
+    var rowToAdd = $("#tablaCursoActual tbody tr:last").clone();
+    // empty cells of this row
+    $(rowToAdd).find('td').each(function(){
+	if($(this).is(".alumno") || $(this).is(".nota")){
+	    $(this).text('');
+	}
+    });
+    //add it to table
+    $("#tablaCursoActual tbody").append(rowToAdd);
+
 }
 function deleteRow(row){
     var txt;
     var r = confirm("¿Estás seguro que quieres eliminar esta fila?\nAl borrar la fila también eliminarás cualquier información de este alumno referente al curso actual");
-    if (r == true) {
-	$(row).parents("tr").remove();
-	//BORRAR REGISTRO DE LA TABLA CALIFICACION Y DE LAS ARRAYS DE ESE ALUMNO Y AÑO (No se borra info del alumno, pero no sé que hacer ocn ella)
+    if( r == true ) {
+	
+	    $(row).parents("tr").remove();
+	
+	return true;
+    } else {
+	return false;
     }
-}
-function calcularAlertas(){
-    //BUCLE QUE SELECCIONE TODOS LOS ALUMNOS Y LLAME A CALCULAR ALERTA.JSP que a su vez interactuará con Modelo matemático
 }
 
-function saveRow(row){
-    var txt;
-    var r = confirm("¿Estás seguro que quieres guardar los datos");
-    if (r == true) {
-	//Se guardan los datos referentes a esa fila
-    }
+//BORRAR REGISTRO DE LA TABLA CALIFICACION Y DE LAS ARRAYS DE ESE ALUMNO Y AÑO (No se borra info del alumno, pero no sé que hacer ocn ella)
+function calcularAlertas(){
+    // Loop through grabbing everything
+    var $table = $("#tablaCursoActual"),
+    rows = [],
+    pruebas = [];
+
+    $table.find(".header_prueba").each(function () {
+	pruebas.push($(this).html());
+    });
+
+    $table.find("tbody tr").each(function () {
+	var row = {};
+	$(this).find(".nota").each(function (i) {
+	    var key = pruebas[i],
+	    value = $(this).html();
+	    row[key] = value;
+	});
+	rows.push(row);
+	//AQUI HEMOS RECORRIDO TODA LA TABLA, AL RECORRERLA SE VA RECALCULANDO LA ALERTA PARA CADA FILA
+    });
+    console.log(rows);
 }
+
+
+function saveRow(alumno){
+    var fila = $(a).parents("tr");
+    var $table = $("#tablaCursoActual"),
+    rows = [],
+    pruebas = [];
+    $table.find(".header_prueba").each(function () {
+	pruebas.push($(this).html());
+    });
+    
+  var row = {};
+    $(fila).find(".nota").each(function (i) {
+	var key = pruebas[i],
+	value = $(this).html();
+	row[key] = value;
+    });
+    rows.push(row);
+    
+    //FALTA PILLAR EL ALUMNO Y CONSTRUIR UN JSON CON el
+    console.log(rows);
+}
+
+
+
+//Let's put this in the object like you want and convert to JSON (Note: jQuery will also do this for you on the Ajax request)
+
+//var Tx;
+//var notas = [];
+//function saveRow(row){
+//var txt;
+//var r = confirm("¿Estás seguro que quieres guardar los datos");
+//if (r == true) {
+//Tx = $("#alumno_"+row+" .nota");
+//for(var i = 0;i<Tx.length;i++){
+//notas.push([row,parseFloat(Tx[i].textContent), "T"+(i+1)]);
+//}
+//console.log(notas)
+////Tx representa T1,T2,T3 etc...
+////Se guardan los datos referentes a esa fila
+//}
+//}
 
 
 

@@ -28,12 +28,12 @@
 			<!-- CABECERA EN BASE A LA TABLA PRUEBAS -->
 			<thead>
 				<tr>
-					<th id="alumno">alumno</th>
+					<th id="header_alumno">alumno</th>
 					<%
 						for (int i = 0; i < pruebas.size(); i++) {
 							String prueba = (String) pruebas.get(i).getTitulo();
 					%>
-					<th id="prueba" ><%=prueba%></th>
+					<th class="header_prueba"><%=prueba%></th>
 					<%
 						}
 					%>
@@ -46,35 +46,34 @@
 			<tbody>
 				<%
 					Map<Integer, String> alumno_year = obtenerHashMap(calificaciones);
-
 					Iterator<Map.Entry<Integer, String>> it = alumno_year.entrySet().iterator();
 					while (it.hasNext()) {
 						Map.Entry<Integer, String> dupla = (Map.Entry<Integer, String>) it.next();
 						Integer alumno = dupla.getKey();
 						String year = dupla.getValue();
 				%>
-				<tr id="tr_clone">
-					<td><%=alumno%></td>
+				<tr class = "fila">
+					<td contenteditable="true" class="alumno"><%=alumno%></td>
 					<%
 						double[] notas = devolverNotas(alumno, year, pruebas.size(), calificaciones);
 							for (int j = 0; j < notas.length; j++) {
 								if (notas[j] == -1.0) {
 					%>
-					<td contenteditable="true" id="nota">NP</td>
+					<td contenteditable="true" class="nota">NP</td>
 					<%
 						} else {
 					%>
-					<td contenteditable="true" id="nota"><%=notas[j]%></td>
+					<td contenteditable="true" class="nota"><%=notas[j]%></td>
 					<%
 						}
 							}
 					%>
 					<td><div class="progress">
-							<div class="progress-bar progress-bar-striped" style="width: 30%">30
-								%</div>
+							<div class="progress-bar progress-bar-striped" style="width: 30%">30%</div>
 						</div></td>
-					<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a><a><i
-							class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>
+					<td><a><i class='fa fa-save'
+							onclick='saveRow(this)'></i></a><a><i class='fa fa-trash'
+							onclick='deleteRow(this)'></i></a></td>
 					<%
 						}
 					%>
