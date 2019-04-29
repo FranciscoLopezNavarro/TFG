@@ -37,7 +37,7 @@ public class DAOAlumno {
 		PreparedStatement ps =null;
 
 		if(checkExistAlumno(id,broker))//Si el usuario no existe
-			throw new Exception("Este usuario ya existe.");
+			throw new Exception("Este alumno ya existe.");
 
 		try {
 			String consulta = "INSERT INTO Alumno (idAlumno) VALUES (?);";
@@ -82,4 +82,22 @@ public class DAOAlumno {
 		return alumnos;
 	}
 
+	public static boolean eliminar(int id) {
+		SQLBroker broker = new SQLBroker();
+		PreparedStatement ps =null;
+		try {
+			if(!checkExistAlumno(id,broker))//Si el usuario no existe
+				throw new Exception("Este alumno no existe.");
+
+			String consulta ="DELETE FROM Alumno WHERE idAlumno = ?;";
+			ps = broker.getConex().prepareStatement(consulta);
+			ps.setInt(1, id);
+
+			ps.executeUpdate();
+			return true;
+		}catch (Exception e) {
+			System.err.println("Error" + e);
+			return false;
+		}
+	}
 }

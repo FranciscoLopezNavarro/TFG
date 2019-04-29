@@ -7,37 +7,78 @@ function seleccion() {
     mostrarAsigElegida($("#comboAsignaturas :selected").text());
 }
 
-$("input").change(function(){
-    alert("The text has been changed.");
-}); 
 function addRow()
 {
+    if($("#tablaCursoActual tbody tr").length> 0){
+	console.log($("#tablaCursoActual tbody tr").length)
+	var rowToAdd = $("#tablaCursoActual tbody tr:last");
 
-    // make a copy of an existing row. We choose the last row of table
-    var rowToAdd = $("#tablaCursoActual tbody tr:last").clone();
-    // empty cells of this row
-    $(rowToAdd).find('td').each(function(){
-	if($(this).is(".alumno") || $(this).is(".nota")){
-	    $(this).text('');
+	if($("#tablaCursoActual tbody tr:empty")){
+	    $("#tablaCursoActual tbody").append(rowToAdd.clone());
+	}else{
+	    rowToAdd.clone();
+	    $(rowToAdd).find('td').each(function(){
+		if($(this).is(".alumno") || $(this).is(".nota")){
+		    $(this).text('');
+		}
+	    });
+	    $("#tablaCursoActual tbody").append(rowToAdd);
 	}
-    });
-    //add it to table
-    $("#tablaCursoActual tbody").append(rowToAdd);
 
-}
-function deleteRow(row){
-    var txt;
-    var r = confirm("¿Estás seguro que quieres eliminar esta fila?\nAl borrar la fila también eliminarás cualquier información de este alumno referente al curso actual");
-    if( r == true ) {
-	
-	    $(row).parents("tr").remove();
-	
-	return true;
-    } else {
-	return false;
+    }else{
+	console.log($("#tablaCursoActual tbody tr").length)
+	crearFilaInicial();
     }
+
 }
 
+function crearFilaInicial()
+{
+    var fila = "<tr></tr>";
+    var celdaAlumno = "<td contenteditable='true' class='alumno'></td>";
+    var celdaNotas = "<td contenteditable='true' class='nota'></td>";
+    var celdasGenericas =  "<td><div class='progress'><div class='progress-bar progress-bar-striped' style='width: 30%'>30%</div></div></td>" +
+    "<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a>" +
+    "<a><i class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>";
+
+    $("#tablaCursoActual tbody").append(fila);
+
+    $(celdaAlumno).appendTo("tbody tr");
+    $("#tablaCursoActual thead").find(".header_prueba").each(function(){
+	$(celdaNotas).appendTo("tbody tr") 
+    });
+    $(celdasGenericas).appendTo("tbody tr");
+
+}
+
+
+function deleteRow(ref){
+    var txt;
+    var fila = $(ref).parents("tr");
+    var alumno =  $(fila).find(".alumno").html();
+
+    if(alumno != ""){
+	var r = confirm("¿Estás seguro que quieres eliminar esta fila?\n Al borrar la fila también eliminarás cualquier información de este alumno referente al curso actual");
+	if( r == true ) {
+	    fila.remove();
+	    var json = {alumno: alumno}
+	    var xmlhttp = new XMLHttpRequest();
+	    xmlhttp.open("POST","../jsp/eliminarFilas.jsp");
+	    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+		    //Comportamiento del html
+		    //calcularAlertas();
+		    alert("alumno borrado con exito");
+		    //$('#tablaCursoActual').DataTable().ajax.reload();
+		}		
+	    }
+	    xmlhttp.send("delete="+JSON.stringify(json));
+	    return true;
+	}
+    }
+    fila.remove();
+}
 //BORRAR REGISTRO DE LA TABLA CALIFICACION Y DE LAS ARRAYS DE ESE ALUMNO Y AÑO (No se borra info del alumno, pero no sé que hacer ocn ella)
 function calcularAlertas(){
     // Loop through grabbing everything
@@ -62,55 +103,49 @@ function calcularAlertas(){
     console.log(rows);
 }
 
-
-function saveRow(alumno){
-    var fila = $(a).parents("tr");
+function saveRow(ref){
+    var json ={};
+    var fila = $(ref).parents("tr");
     var $table = $("#tablaCursoActual"),
-    rows = [],
     pruebas = [];
     $table.find(".header_prueba").each(function () {
 	pruebas.push($(this).html());
     });
-    
-  var row = {};
+    var alumno =  $(fila).find(".alumno").html();
+    var row = {};
     $(fila).find(".nota").each(function (i) {
 	var key = pruebas[i],
 	value = $(this).html();
 	row[key] = value;
+
     });
-    rows.push(row);
-    
-    //FALTA PILLAR EL ALUMNO Y CONSTRUIR UN JSON CON el
-    console.log(rows);
+
+    guardarFila(row, alumno);
 }
 
 
-
-//Let's put this in the object like you want and convert to JSON (Note: jQuery will also do this for you on the Ajax request)
-
-//var Tx;
-//var notas = [];
-//function saveRow(row){
-//var txt;
-//var r = confirm("¿Estás seguro que quieres guardar los datos");
-//if (r == true) {
-//Tx = $("#alumno_"+row+" .nota");
-//for(var i = 0;i<Tx.length;i++){
-//notas.push([row,parseFloat(Tx[i].textContent), "T"+(i+1)]);
-//}
-//console.log(notas)
-////Tx representa T1,T2,T3 etc...
-////Se guardan los datos referentes a esa fila
-//}
-//}
-
-
+function guardarFila(row, alumno){
+    var json = {
+	    alumno: alumno,
+	    pruebas :[row], 
+	    asignatura :obtenerAsignatura(),
+	    curso: obtenerCursoActual()
+    } 
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/guardarFilas.jsp");
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    //Comportamiento del html
+	    //calcularAlertas();
+	}		
+    }
+    xmlhttp.send("save="+JSON.stringify(json));
+}
 
 function seleccionCursoActual(){   
     var xmlhttp = new XMLHttpRequest();
-
-////Set selected
-    var seleccionado = $("#comboAsignaturas").val();
+    var seleccionado = obtenerAsignatura();
     var asig_actual = {
 	    asig: seleccionado,
 	    curso : obtenerCursoActual()
@@ -119,7 +154,7 @@ function seleccionCursoActual(){
 	xmlhttp.open("POST","../jsp/TablaCursoActual.jsp");
 	xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	xmlhttp.onreadystatechange = function(){
-	    if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    if(xmlhttp.readyState == 4 && xmlhttp.status == 200){		
 		$("#divtablaCursoActual").html(xmlhttp.responseText);	
 		$("#p_actual").text("Curso: " + obtenerCursoActual());
 		//calcularAlertas();
@@ -132,9 +167,7 @@ function seleccionCursoActual(){
 
 function seleccionHistorico(){   
     var xmlhttp = new XMLHttpRequest();
-
-////Set selected
-    var seleccionado = $("#comboAsignaturas").val();
+    var seleccionado = obtenerAsignatura();
     if(seleccionado =>1){
 	xmlhttp.open("POST","../jsp/CargaTablaHistoricos.jsp");
 	xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -167,3 +200,27 @@ function obtenerCursoActual(){
     }
     return curso;
 }
+
+function obtenerAsignatura(){
+    var asignatura =  $("#comboAsignaturas").val();
+    return asignatura;
+}
+
+$(document).on( "click", ".nota", function() {
+    var header =  $(this).closest('table').find('th').eq($(this).index()).html();
+    var json ={
+	    prueba: header,
+	    asignatura: obtenerAsignatura()
+    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/relacionesPruebas.jsp");
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	   var respuesta = xmlhttp.responseText;
+	   alert(respuesta);
+	}
+    }
+    xmlhttp.send("header="+JSON.stringify(json));
+});
+    

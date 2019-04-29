@@ -12,12 +12,10 @@ function validate(){
 	request.open("post", "../jsp/login.jsp");
 	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	request.onreadystatechange = function() {
-		if(request.readyState === 4){
+		if(request.readyState == 4 && request.status == 200){
 			var respuesta = JSON.parse(request.responseText);
 			if(respuesta.result ==="OK"){
-				location.href="../html/main.html";
-				console.log("Se ha loggeado con exito");
-				
+			    location.href="../html/main.html";	
 			}else{
 				alert(respuesta.mensaje);
 			}

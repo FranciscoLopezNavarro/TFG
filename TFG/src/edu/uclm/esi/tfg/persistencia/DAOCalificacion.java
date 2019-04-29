@@ -9,18 +9,20 @@ import edu.uclm.esi.tfg.dominio.Calificacion;
 
 public class DAOCalificacion {
 
-	private static void registrarNueva(int alumno, int prueba, double nota,String año, SQLBroker broker)throws SQLException{
+	private static void registrarNueva(int alumno, int prueba, double nota,String year, SQLBroker broker)throws SQLException{
 		broker.getConex();
 		PreparedStatement ps =null;
 
 		try {
 
-			String consulta = "INSERT INTO calificacion (alumno,prueba, nota,año) VALUES (?, ?, ?, ?)";
+			String consulta = "INSERT INTO calificacion (alumno,prueba, nota,año) VALUES (?, ?, ?, ?) "
+					+ "ON DUPLICATE KEY UPDATE "
+					+ "alumno = VALUES(alumno), prueba = VALUES(prueba), nota = VALUES(nota), año = VALUES(año)";
 			ps = broker.getConex().prepareStatement(consulta);
 			ps.setInt(1, alumno);
 			ps.setInt(2, prueba);
 			ps.setDouble(3, nota);
-			ps.setString(4, año);
+			ps.setString(4, year);
 			ps.execute();	
 
 		}catch (Exception e) {
@@ -29,42 +31,41 @@ public class DAOCalificacion {
 
 	}
 
-	private static boolean checkExistCalificacion(int alumno, int prueba, double nota, String año, SQLBroker broker)throws SQLException{
-		boolean exist = false;
-		broker.getConex();
-		PreparedStatement ps =null;
-		ResultSet rs = null;
+	//	private static boolean checkExistCalificacion(int alumno, int prueba, double nota, String year, SQLBroker broker)throws SQLException{
+	//		boolean exist = false;
+	//		broker.getConex();
+	//		PreparedStatement ps =null;
+	//		ResultSet rs = null;
+	//
+	//		try {
+	//			String consulta = "SELECT * FROM calificacion WHERE (alumno = ? and prueba = ? and nota = ? and año = ?)";
+	//			ps = broker.getConex().prepareStatement(consulta);
+	//			ps.setInt(1, alumno);
+	//			ps.setInt(2, prueba);
+	//			ps.setDouble(3, prueba);
+	//			ps.setString(4, year);
+	//			rs = ps.executeQuery();
+	//
+	//			if(rs.absolute(1)){
+	//				exist = true;
+	//			}else {
+	//				exist = false;
+	//			}
+	//		}catch (Exception e) {
+	//			System.err.println("Error" + e);
+	//		}
+	//		return exist;
+	//
+	//	}
 
-		try {
-			String consulta = "SELECT * FROM calificacion WHERE (alumno = ? and prueba = ? and nota = ? and año = ?)";
-			ps = broker.getConex().prepareStatement(consulta);
-			ps.setInt(1, alumno);
-			ps.setInt(2, prueba);
-			ps.setDouble(3, prueba);
-			ps.setString(4, año);
-			rs = ps.executeQuery();
-
-			if(rs.absolute(1)){
-				exist = true;
-			}else {
-				exist = false;
-			}
-		}catch (Exception e) {
-			System.err.println("Error" + e);
-		}
-		return exist;
-
-	}
-
-	public static Calificacion registrar(Integer alumno, Integer idPrueba, Double nota, String año) throws Exception {
+	public static Calificacion registrar(Integer alumno, Integer idPrueba, Double nota, String year) throws Exception {
 		SQLBroker broker = new SQLBroker();
 		Calificacion cali;
-		if(checkExistCalificacion(alumno, idPrueba, nota, año, broker)) 
-			throw new Exception("Esta asignatura ya existe en la BBDD");//Si la asignatura ya existe
+		//		if(checkExistCalificacion(alumno, idPrueba, nota, year, broker)) 
+		//			throw new Exception("Esta asignatura ya existe en la BBDD");//Si la asignatura ya existe
 
-		registrarNueva(alumno,idPrueba,nota,año,broker);
-
-		cali =new Calificacion(alumno,idPrueba,nota,año);
+		registrarNueva(alumno,idPrueba,nota,year,broker);
+		cali =new Calificacion(alumno,idPrueba,nota,year);
 
 		if(broker.getConex() !=null) 
 			broker.getConex().close();
@@ -99,5 +100,7 @@ public class DAOCalificacion {
 
 		return calificaciones;
 	}
+
+
 
 }

@@ -3,7 +3,6 @@
 	pageEncoding="UTF-8"%>
 
 <%
-	System.out.println("entrando");
 	String p = request.getParameter("p");
 	JSONObject jso = new JSONObject(p);
 	JSONObject respuesta = new JSONObject();
@@ -22,8 +21,7 @@
 		} else {
 			throw new Exception("No se pudo registrar el usuario");
 		}
-		System.out.println(respuesta.toString());
-
+	
 	} catch (Exception e) {
 		//No devolver el error directamente sino captar el code y devolver un mensaje predefinido
 		respuesta.put("result", "ERROR");

@@ -17,9 +17,7 @@ function registrar(){
 				location.href="../html/main.html";
 				console.log("Usuario creado con éxito");
 			}else{
-			
 				alert(respuesta.mensaje);
-
 			}
 		}
 	};

@@ -33,7 +33,7 @@
 						for (int i = 0; i < pruebas.size(); i++) {
 							String prueba = (String) pruebas.get(i).getTitulo();
 					%>
-					<th class="header_prueba"><%=prueba%></th>
+					<th class="header_prueba" scope="col"><%=prueba%></th>
 					<%
 						}
 					%>
@@ -46,13 +46,15 @@
 			<tbody>
 				<%
 					Map<Integer, String> alumno_year = obtenerHashMap(calificaciones);
+					if(!alumno_year.isEmpty()){
 					Iterator<Map.Entry<Integer, String>> it = alumno_year.entrySet().iterator();
 					while (it.hasNext()) {
 						Map.Entry<Integer, String> dupla = (Map.Entry<Integer, String>) it.next();
 						Integer alumno = dupla.getKey();
 						String year = dupla.getValue();
 				%>
-				<tr class = "fila">
+				
+				<tr>
 					<td contenteditable="true" class="alumno"><%=alumno%></td>
 					<%
 						double[] notas = devolverNotas(alumno, year, pruebas.size(), calificaciones);
@@ -71,11 +73,13 @@
 					<td><div class="progress">
 							<div class="progress-bar progress-bar-striped" style="width: 30%">30%</div>
 						</div></td>
-					<td><a><i class='fa fa-save'
-							onclick='saveRow(this)'></i></a><a><i class='fa fa-trash'
-							onclick='deleteRow(this)'></i></a></td>
+					<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a><a><i
+							class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>
 					<%
-						}
+					}	
+					}else{
+						
+					}
 					%>
 				</tr>
 			</tbody>

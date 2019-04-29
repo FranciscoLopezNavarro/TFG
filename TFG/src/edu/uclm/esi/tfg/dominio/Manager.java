@@ -72,24 +72,10 @@ public class Manager {
 		usuarios.put(nombre, user);
 		return  user;
 	}
-	//	public void addRecoverCodePwd(long codigo,String email) {
-	//		this.codePwd.put(codigo, email);
-	//	}
-	//	public void changeRecoverCodePwd(String code,String pwd) {
-	//		Long aux = Long.parseLong(code);
-	//		String email = this.codePwd.remove(aux);
-	//		try {
-	//			DAOUser.changePasswordEmail(email, pwd);
-	//		} catch (Exception e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		}
 
 	public void readExcelFile(File excelFile){  
 
 		ArrayList<String> nombrePruebas = new ArrayList<String>();
-
-
 		try {
 			FileInputStream inputStream = new FileInputStream(excelFile);
 
@@ -141,7 +127,7 @@ public class Manager {
 								nota = Double.parseDouble(formatter.formatCellValue(celda).replaceAll(",", "."));
 							}
 							try {
-								registrarCalificación(id,getIdPruebas(nombrePruebas.get(x)),año,nota);
+								registrarCalificacion(id,getIdPruebas(nombrePruebas.get(x)),año,nota);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -285,13 +271,13 @@ public class Manager {
 		return id;
 	}
 
-	private void registrarCalificación(Integer alumno, Integer idPrueba, String año, Double nota) throws Exception {
+	public void registrarCalificacion(Integer alumno, Integer idPrueba, String año, Double nota) throws Exception {
 		Calificacion cali = DAOCalificacion.registrar(alumno,idPrueba,nota,año);
 		updateCalificaciones(cali);
 	}
 
 
-	private void registrarAlumno(int id) throws Exception {
+	public void registrarAlumno(int id) throws Exception {
 		Alumno alu = DAOAlumno.registrar(id);
 		updateAlumnos(alu);
 	}
@@ -426,6 +412,70 @@ public class Manager {
 		}
 
 		return buffer.toString();
+	}
+
+	public void eliminarRegistro(String id) {
+		try {
+			if(DAOAlumno.eliminar(Integer.parseInt(id))) {
+				System.out.println("Alumno eliminado con éxito");
+				cargarAlumnos();
+				cargarCalificaciones();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public void guardarCalificacion(int alumno, String prueba, String nota, String curso) {
+		try {
+			//			if(DAOCalificacion.registrar(Integer.parseInt(alumno), Integer.parseInt(prueba), Double.parseDouble(nota), curso)) {
+			//				System.out.println("Alumno eliminado con éxito");
+			//				cargarAlumnos();
+			//				cargarCalificaciones();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+	}
+
+	public ArrayList<Prueba>  getRelacionesPrueba(String prueba, int asignatura) {
+		ArrayList<Prueba> pruebas_asig = getPruebasAsignatura(asignatura);
+		ArrayList<Prueba> pruebas_aux =new ArrayList<Prueba>();
+		ArrayList<Integer> ids = new ArrayList<Integer>();;
+
+		ids = pruebasRelacionadas(getIDPrueba(prueba,pruebas_asig));
+		for(int j=0;j<pruebas_asig.size();j++) {
+			for(int i=0;i<ids.size();i++) {
+				if(ids.get(i) == pruebas_asig.get(j).getId()) {
+					pruebas_aux.add(pruebas_asig.get(j));
+				}
+			}
+		}
+		return pruebas_aux;
+	}
+
+
+	public int  getIDPrueba(String prueba, ArrayList<Prueba> pruebas_aux) {
+		int id=0;
+		for(int i=0;i<pruebas_aux.size();i++) {
+			if(pruebas_aux.get(i).getTitulo().equals(prueba)) {
+				id = pruebas_aux.get(i).getId();
+			}
+		}
+		return id;
+	}
+
+	public ArrayList<Integer> pruebasRelacionadas(int id) {
+		ArrayList<Integer> ids = new ArrayList<Integer>();
+
+		for(int i =0; i<relacionesPruebas.size();i++) {
+			if(relacionesPruebas.get(i).getPrueba1()== id) {
+				ids.add(relacionesPruebas.get(i).getPrueba2());
+			}else if(relacionesPruebas.get(i).getPrueba2()== id){
+				ids.add(relacionesPruebas.get(i).getPrueba1());
+			}
+		}
+		return ids;
 	}
 
 }
