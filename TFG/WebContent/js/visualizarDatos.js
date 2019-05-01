@@ -10,23 +10,20 @@ function seleccion() {
 function addRow()
 {
     if($("#tablaCursoActual tbody tr").length> 0){
-	console.log($("#tablaCursoActual tbody tr").length)
 	var rowToAdd = $("#tablaCursoActual tbody tr:last");
 
-	if($("#tablaCursoActual tbody tr:empty")){
+	if($("#tablaCursoActual tbody .alumno:last").html() === ""){
 	    $("#tablaCursoActual tbody").append(rowToAdd.clone());
 	}else{
-	    rowToAdd.clone();
-	    $(rowToAdd).find('td').each(function(){
+	    $("#tablaCursoActual tbody tr:last").after(rowToAdd.clone());
+	    $("#tablaCursoActual tbody tr:last").find('td').each(function(){
 		if($(this).is(".alumno") || $(this).is(".nota")){
 		    $(this).text('');
 		}
-	    });
-	    $("#tablaCursoActual tbody").append(rowToAdd);
+	    });  
 	}
 
     }else{
-	console.log($("#tablaCursoActual tbody tr").length)
 	crearFilaInicial();
     }
 
@@ -43,11 +40,11 @@ function crearFilaInicial()
 
     $("#tablaCursoActual tbody").append(fila);
 
-    $(celdaAlumno).appendTo("tbody tr");
+    $(celdaAlumno).appendTo("#tablaCursoActual tbody tr");
     $("#tablaCursoActual thead").find(".header_prueba").each(function(){
-	$(celdaNotas).appendTo("tbody tr") 
+	$(celdaNotas).appendTo("#tablaCursoActual tbody tr") 
     });
-    $(celdasGenericas).appendTo("tbody tr");
+    $(celdasGenericas).appendTo("#tablaCursoActual tbody tr");
 
 }
 
@@ -217,10 +214,10 @@ $(document).on( "click", ".nota", function() {
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
-	   var respuesta = xmlhttp.responseText;
-	   alert(respuesta);
+	    var respuesta = xmlhttp.responseText;
+	    // alert(respuesta);
 	}
     }
     xmlhttp.send("header="+JSON.stringify(json));
 });
-    
+

@@ -13,7 +13,7 @@
 
 	try {
 		int alumno = Integer.parseInt(jso.optString("alumno"));
-		String curso = jso.optString("curso");
+		String curso = jso.optString("curso").replace(" ", "");
 		String asignatura = jso.optString("asignatura");
 		JSONArray notas = jso.optJSONArray("pruebas");
 

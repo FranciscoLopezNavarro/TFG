@@ -346,7 +346,6 @@ public class Manager {
 			}
 		}
 
-
 		return calificaciones_aux;
 	}
 
@@ -426,17 +425,6 @@ public class Manager {
 		}
 	}
 
-	public void guardarCalificacion(int alumno, String prueba, String nota, String curso) {
-		try {
-			//			if(DAOCalificacion.registrar(Integer.parseInt(alumno), Integer.parseInt(prueba), Double.parseDouble(nota), curso)) {
-			//				System.out.println("Alumno eliminado con éxito");
-			//				cargarAlumnos();
-			//				cargarCalificaciones();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-	}
 
 	public ArrayList<Prueba>  getRelacionesPrueba(String prueba, int asignatura) {
 		ArrayList<Prueba> pruebas_asig = getPruebasAsignatura(asignatura);
@@ -479,6 +467,3 @@ public class Manager {
 	}
 
 }
-
-
-

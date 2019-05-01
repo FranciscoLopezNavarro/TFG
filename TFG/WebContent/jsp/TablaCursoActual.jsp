@@ -18,8 +18,7 @@
 	ArrayList<Prueba> pruebas = Manager.get().getPruebasAsignatura(asignatura);
 
 	//Cogemos las calificaciones donde estén esas pruebas
-	ArrayList<Calificacion> calificaciones = Manager.get().getCalificacionesPruebasCursoActual(pruebas,
-			curso_actual);
+	ArrayList<Calificacion> calificaciones = Manager.get().getCalificacionesPruebasCursoActual(pruebas,curso_actual);
 %>
 
 <body>
@@ -46,20 +45,20 @@
 			<tbody>
 				<%
 					Map<Integer, String> alumno_year = obtenerHashMap(calificaciones);
-					if(!alumno_year.isEmpty()){
-					Iterator<Map.Entry<Integer, String>> it = alumno_year.entrySet().iterator();
-					while (it.hasNext()) {
-						Map.Entry<Integer, String> dupla = (Map.Entry<Integer, String>) it.next();
-						Integer alumno = dupla.getKey();
-						String year = dupla.getValue();
+					if (!alumno_year.isEmpty()) {
+						Iterator<Map.Entry<Integer, String>> it = alumno_year.entrySet().iterator();
+						while (it.hasNext()) {
+							Map.Entry<Integer, String> dupla = (Map.Entry<Integer, String>) it.next();
+							Integer alumno = dupla.getKey();
+							String year = dupla.getValue();
 				%>
-				
+
 				<tr>
 					<td contenteditable="true" class="alumno"><%=alumno%></td>
 					<%
 						double[] notas = devolverNotas(alumno, year, pruebas.size(), calificaciones);
-							for (int j = 0; j < notas.length; j++) {
-								if (notas[j] == -1.0) {
+								for (int j = 0; j < notas.length; j++) {
+									if (notas[j] == -1.0) {
 					%>
 					<td contenteditable="true" class="nota">NP</td>
 					<%
@@ -68,7 +67,7 @@
 					<td contenteditable="true" class="nota"><%=notas[j]%></td>
 					<%
 						}
-							}
+								}
 					%>
 					<td><div class="progress">
 							<div class="progress-bar progress-bar-striped" style="width: 30%">30%</div>
@@ -76,10 +75,8 @@
 					<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a><a><i
 							class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>
 					<%
-					}	
-					}else{
-						
-					}
+						}
+						}
 					%>
 				</tr>
 			</tbody>
