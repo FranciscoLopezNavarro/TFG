@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class SQLBroker {
 	private String driver = "com.mysql.jdbc.Driver";
-	private String host = "jdbc:mysql://localhost:3306/TFG";
+	private String host = "jdbc:mysql://localhost:3306/tfg";
 	private String user = "root";
 	private String pwd = "root";
 

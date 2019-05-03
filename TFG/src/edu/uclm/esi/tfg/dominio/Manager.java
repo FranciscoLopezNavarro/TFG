@@ -117,7 +117,7 @@ public class Manager {
 						//AHORA LEEMOS LAS SIGUIENTES CELDAS DE LA FILA, EL SEGUNDO VALOR SERA EL AÑO Y DESPUES SE LEEN TANTAS CELDAS COMO PRUEBAS HAYAMOS LEIDO EN LA PRIMERA LINEA
 						//Bucle para las celdas
 						Double nota;
-						String año = formatter.formatCellValue(cellIterator.next());
+						String year = formatter.formatCellValue(cellIterator.next());
 
 						for(int x=0;x<nombrePruebas.size();x++) {
 							Cell celda = cellIterator.next();
@@ -127,7 +127,7 @@ public class Manager {
 								nota = Double.parseDouble(formatter.formatCellValue(celda).replaceAll(",", "."));
 							}
 							try {
-								registrarCalificacion(id,getIdPruebas(nombrePruebas.get(x)),año,nota);
+								registrarCalificacion(id,getIdPruebas(nombrePruebas.get(x)),year,nota);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -271,8 +271,8 @@ public class Manager {
 		return id;
 	}
 
-	public void registrarCalificacion(Integer alumno, Integer idPrueba, String año, Double nota) throws Exception {
-		Calificacion cali = DAOCalificacion.registrar(alumno,idPrueba,nota,año);
+	public void registrarCalificacion(Integer alumno, Integer idPrueba, String year, Double nota) throws Exception {
+		Calificacion cali = DAOCalificacion.registrar(alumno,idPrueba,nota,year);
 		updateCalificaciones(cali);
 	}
 
