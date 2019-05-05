@@ -9,26 +9,31 @@ public class Modelo {
 	private ArrayList<Double> probabilidades = new ArrayList<Double>();
 
 	int DNI = 333333333;
-	public double calcularAlerta(Integer alumno) {
-		return alerta();
-	}
-	//PRIMER CALCULO///////// DESVIACION DEL ALUMNO FRENTE A LA NOTA DE CORTE
-	public double desviacionAlumno(double nota_alumno, double nota_min, double nota_corte, double nota_max){
-		double D = 0.0;
-		if(nota_alumno >= nota_corte) {
-			D = (nota_alumno - nota_corte)/(nota_max - nota_corte);
-		}else {
-			D= (nota_alumno - nota_corte)/(nota_corte - nota_min);
-		}
-		desviacionesAlumno.add(D);
-		return D;
-	}
-	public double desviacionAcumuladaAlumno() {
-		//Falta estructura de datos de desviaciones por prueba respecto a la nota de corte
-		Double D = 0.0;
-		Double D_aux = 0.0;
-		int n = desviacionesAlumno.size();
+	public double calcularAlerta(int alumno, int asignatura) {
+		ArrayList<Calificacion> calificaciones_alumno = null; // y año
+		ArrayList<Prueba> pruebas_asig = null;
 
+		double desviacionAlumno = desviacionAlumno(pruebas_asig,calificaciones_alumno);
+		double desviacionAsignatura = desviacionAsignatura(pruebas_asig,calificaciones_alumno);
+
+		return alerta(desviacionAlumno, desviacionAsignatura);
+	}
+
+	//PRIMER CALCULO///////// DESVIACION DEL ALUMNO FRENTE A LA NOTA DE CORTE DE CADA PRUEBA
+	public double desviacionAlumno(ArrayList<Prueba> pruebas,ArrayList<Calificacion> calificaciones_alumno){
+		double D = 0.0;
+		double D_aux = 0.0;
+		for (int i = 0; i<pruebas.size();i++) {
+			for (int j= 0; j< calificaciones_alumno.size();j++){
+				if(pruebas.get(i).getId() == calificaciones_alumno.get(j).getPrueba())
+					if(calificaciones_alumno.get(j).getNota() >= pruebas.get(i).getN_corte()) {
+						desviacionesAlumno.add((calificaciones_alumno.get(j).getNota() - pruebas.get(i).getN_corte())/(pruebas.get(i).getN_max() - pruebas.get(i).getN_corte()));
+					}else {
+						desviacionesAlumno.add(calificaciones_alumno.get(j).getNota() - pruebas.get(i).getN_corte()/(pruebas.get(i).getN_corte() - pruebas.get(i).getN_min()));
+					}
+			}
+		}
+		int n = desviacionesAlumno.size();
 		for(int i = 0; i<n;i++) {
 			D_aux += desviacionesAlumno.get(i);
 		}
@@ -37,19 +42,17 @@ public class Modelo {
 	}
 
 	//SEGUNDO CALCULO///////// DESVIACION DEL ALUMNO FRENTE A LA MEDIA DE OTROS ALUMNOS (HISTORICOS)
-	public double desviacionAsignatura(double nota_alumno, double nota_min, double nota_max, double media_alumnos) {
+	public double desviacionAsignatura(ArrayList<Prueba> pruebas, ArrayList<Calificacion> calificaciones_alumno) {
 		double D = 0.0;
-
-		D = (nota_alumno - media_alumnos)/(nota_max - nota_min);
-		desviacionesAsignatura.add(D);
-		return D;
-	}
-	public double desviacionAcumuladaAsignatura() {
-		//Falta estructura de datos de desviaciones por prueba respecto a la media de alumnos
-		Double D = 0.0;
-		Double D_aux = 0.0;
+		double D_aux = 0.0;
+		for (int i = 0; i< pruebas.size();i++) {
+			for (int j= 0; j< calificaciones_alumno.size();j++){
+				if(pruebas.get(i).getId() == calificaciones_alumno.get(j).getPrueba()) {
+					desviacionesAsignatura.add((calificaciones_alumno.get(j).getNota() - Manager.get().getMediaPrueba(pruebas.get(i).getId())) / (pruebas.get(i).getN_max()  -  pruebas.get(i).getN_min()));
+				}
+			}
+		}
 		int n = desviacionesAsignatura.size();
-
 		for(int i = 0; i<n;i++) {
 			D_aux += desviacionesAsignatura.get(i);
 		}
@@ -58,7 +61,6 @@ public class Modelo {
 	}
 
 	//TERCER CALCULO/////////
-
 	public double probabilidadAsignatura(int aprobadosPrueba,int aprobadosAsig, int totalAlumnos) {
 		double P = 0.0;
 		P = (aprobadosAsig/totalAlumnos)/(aprobadosPrueba/totalAlumnos);
@@ -72,10 +74,8 @@ public class Modelo {
 	}
 
 
-	private double compararProbabilidad() {
-		Double probAsig = probabilidadAsignatura(0, 0, 0);
-		Double probInterv = probabilidadIntervalos(0, 0, 0);
-		if(probAsig > probInterv) {
+	private double compararProbabilidad(double probAsig, double probInterv) {
+		if(probAsig >= probInterv) {
 			return probAsig;
 		}else {
 			return probInterv;
@@ -84,16 +84,14 @@ public class Modelo {
 	//CUARTO CALCULO///////// GRADO DE ALERTA DE SUSPENDER DEL ALUMNO (CONJUNTO DE PRUEBAS)
 
 
-	public double alerta() {
+	public double alerta(double d_alumno, double d_asignatura) {
 		double A = 0.0;
-		double d_estudiante;
-		double d_asignatura;
-		double probabilidad;
-		
-		d_estudiante = (d_estudiante + 1)/2;
+		double probabilidad = 0;
+
+		d_alumno = (d_alumno + 1)/2;
 		d_asignatura = (d_asignatura + 1)/2;
 
-		A = 1- (d_estudiante + d_asignatura + probabilidad)/3;
+		A = 1 - (d_alumno + d_asignatura + probabilidad)/3;
 		return A;
 	}
 

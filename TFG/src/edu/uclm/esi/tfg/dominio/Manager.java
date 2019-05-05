@@ -465,5 +465,18 @@ public class Manager {
 		}
 		return ids;
 	}
+	public double getMediaPrueba(int id) {
+		double media = 0.0;
+		double suma = 0.0;
+		int size = 0;
 
+		for(int i = 0; i<calificaciones.size();i++){
+			if(calificaciones.get(i).getPrueba() == id) {
+				suma += calificaciones.get(i).getNota();
+				size ++;
+			}
+		}
+		media = suma/size;
+		return media;
+	}
 }
