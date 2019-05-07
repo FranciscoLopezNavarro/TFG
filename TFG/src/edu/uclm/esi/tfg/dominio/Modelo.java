@@ -8,14 +8,13 @@ public class Modelo {
 	private ArrayList<Double> desviacionesAsignatura = new ArrayList<Double>();
 	private ArrayList<Double> probabilidades = new ArrayList<Double>();
 
-	int DNI = 333333333;
-	public double calcularAlerta(int alumno, int asignatura) {
-		ArrayList<Calificacion> calificaciones_alumno = null; // y año
-		ArrayList<Prueba> pruebas_asig = null;
 
-		double desviacionAlumno = desviacionAlumno(pruebas_asig,calificaciones_alumno);
-		double desviacionAsignatura = desviacionAsignatura(pruebas_asig,calificaciones_alumno);
+	public double calcularAlerta(ArrayList<Calificacion> calificaciones_alumno, ArrayList<Prueba> pruebas_asig) {
 
+		double desviacionAlumno = desviacionAlumno(pruebas_asig , calificaciones_alumno);
+		double desviacionAsignatura = desviacionAsignatura(pruebas_asig , calificaciones_alumno);
+		double probabilidad = 0.0;
+		
 		return alerta(desviacionAlumno, desviacionAsignatura);
 	}
 
@@ -61,37 +60,41 @@ public class Modelo {
 	}
 
 	//TERCER CALCULO/////////
-	public double probabilidadAsignatura(int aprobadosPrueba,int aprobadosAsig, int totalAlumnos) {
-		double P = 0.0;
-		P = (aprobadosAsig/totalAlumnos)/(aprobadosPrueba/totalAlumnos);
-		return P;
-	}
-
-	public double probabilidadIntervalos(int aprobadosIntervalo, int aprobadosAsig, int totalAlumnos) {
-		double P = 0.0;
-		P = (aprobadosAsig/totalAlumnos)/(aprobadosIntervalo/totalAlumnos);
-		return P;
-	}
-
-
-	private double compararProbabilidad(double probAsig, double probInterv) {
-		if(probAsig >= probInterv) {
-			return probAsig;
-		}else {
-			return probInterv;
-		}
-	}
+//	public double probabilidadAsignatura(ArrayList<Prueba> pruebas) {
+//		double P = 0.0;
+//		for (int i = 0; i< pruebas.size();i++) {
+//			////Con este bucle se obtiene la posibilidad de superar cada prueba
+//			double prob_prueba = Manager.get().getAprobadosPrueba(pruebas.get(i).getId()) / Manager.get().getTotalAlumnosPrueba(pruebas.get(i).getId());
+//		}
+//		
+//		P = (aprobadosAsig/totalAlumnos)/(aprobadosPrueba/totalAlumnos);
+//		return P;
+//	}
+//
+//	public double probabilidadIntervalos(int aprobadosIntervalo, int aprobadosAsig, int totalAlumnos) {
+//		double P = 0.0;
+//		P = (aprobadosAsig/totalAlumnos)/(aprobadosIntervalo/totalAlumnos);
+//		return P;
+//	}
+//
+//
+//	private double compararProbabilidad(double probAsig, double probInterv) {
+//		if(probAsig >= probInterv) {
+//			return probAsig;
+//		}else {
+//			return probInterv;
+//		}
+//	}
 	//CUARTO CALCULO///////// GRADO DE ALERTA DE SUSPENDER DEL ALUMNO (CONJUNTO DE PRUEBAS)
 
 
 	public double alerta(double d_alumno, double d_asignatura) {
 		double A = 0.0;
-		double probabilidad = 0;
-
+		
 		d_alumno = (d_alumno + 1)/2;
 		d_asignatura = (d_asignatura + 1)/2;
 
-		A = 1 - (d_alumno + d_asignatura + probabilidad)/3;
+		A = 1 - (d_alumno + d_asignatura )/2;
 		return A;
 	}
 

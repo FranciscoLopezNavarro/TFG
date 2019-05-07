@@ -46,7 +46,7 @@
 <body onload="redirect()">
 	<script>
 	function redirect() {
-	    alert("Archivo de notas cargado con éxito");
+	    alert("Archivo de notas cargado con exito");
 	    location.href = "../html/cargaArchivos.html";
 	}
     </script>
@@ -60,7 +60,7 @@
 <body onload="redirect()">
 	<script>
 	function redirect() {
-	    alert("Archivo de configuración cargado con éxito");
+	    alert("Archivo de configuración cargado con exito");
 	    location.href = "../html/cargaArchivos.html";
 	}
     </script>
@@ -77,7 +77,7 @@
 <body onload="redirect()">
 	<script>
 	function redirect() {
-	    alert("ERROR AL CARGAR EL ARCHIVO: Revise la consola del servidor para más información");
+	    alert("ERROR AL CARGAR EL ARCHIVO: Revise la consola del servidor para más informacion");
 	    location.href = "../html/cargaArchivos.html";
 	}
     </script>

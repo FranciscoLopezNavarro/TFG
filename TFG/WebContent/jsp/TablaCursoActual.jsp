@@ -18,7 +18,8 @@
 	ArrayList<Prueba> pruebas = Manager.get().getPruebasAsignatura(asignatura);
 
 	//Cogemos las calificaciones donde estén esas pruebas
-	ArrayList<Calificacion> calificaciones = Manager.get().getCalificacionesPruebasCursoActual(pruebas,curso_actual);
+	ArrayList<Calificacion> calificaciones = Manager.get().getCalificacionesPruebasCursoActual(pruebas,
+			curso_actual);
 %>
 
 <body>
@@ -31,8 +32,9 @@
 					<%
 						for (int i = 0; i < pruebas.size(); i++) {
 							String prueba = (String) pruebas.get(i).getTitulo();
+							String nota_max = Double.toString(pruebas.get(i).getN_max());
 					%>
-					<th class="header_prueba" scope="col"><%=prueba%></th>
+					<th class="header_prueba" scope="col"><%=prueba + " (" + nota_max + ")"%></th>
 					<%
 						}
 					%>
@@ -69,8 +71,9 @@
 						}
 								}
 					%>
-					<td><div class="progress">
-							<div class="progress-bar progress-bar-striped" style="width: 30%">30%</div>
+					<td><div class="progress progress-striped active">
+							<div class="progress-bar" role="progressbar" aria-valuenow="0"
+								aria-valuemin="0" aria-valuemax="100"></div>
 						</div></td>
 					<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a><a><i
 							class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>

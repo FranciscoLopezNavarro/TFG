@@ -79,25 +79,28 @@ function deleteRow(ref){
 //BORRAR REGISTRO DE LA TABLA CALIFICACION Y DE LAS ARRAYS DE ESE ALUMNO Y AÑO (No se borra info del alumno, pero no sé que hacer ocn ella)
 function calcularAlertas(){
     // Loop through grabbing everything
-    var $table = $("#tablaCursoActual"),
-    rows = [],
-    pruebas = [];
 
-    $table.find(".header_prueba").each(function () {
-	pruebas.push($(this).html());
+    $("#tablaCursoActual").find("tbody tr").each(function () {
+	var alumno = $(this).find(".alumno").html();
+	var json ={
+		alumno: alumno,
+		asignatura: obtenerAsignatura(),
+		curso: obtenerCursoActual()
+	}
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("POST","../jsp/calculoAlerta.jsp");
+	xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	xmlhttp.onreadystatechange = function(){
+	    if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+		var width = JSON.parse(xmlhttp.responseText);
+		//poner anchura a this barrita
+		 $('.progress-bar').css('width', width.riesgo+'%').attr('aria-valuenow', width.riesgo);
+	    }
+	}
+
+	xmlhttp.send("calculo_alerta="+JSON.stringify(json));
     });
 
-    $table.find("tbody tr").each(function () {
-	var row = {};
-	$(this).find(".nota").each(function (i) {
-	    var key = pruebas[i],
-	    value = $(this).html();
-	    row[key] = value;
-	});
-	rows.push(row);
-	//AQUI HEMOS RECORRIDO TODA LA TABLA, AL RECORRERLA SE VA RECALCULANDO LA ALERTA PARA CADA FILA
-    });
-    console.log(rows);
 }
 
 function saveRow(ref){
@@ -114,7 +117,6 @@ function saveRow(ref){
 	var key = pruebas[i],
 	value = $(this).html();
 	row[key] = value;
-
     });
 
     guardarFila(row, alumno);
@@ -134,7 +136,7 @@ function guardarFila(row, alumno){
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 	    //Comportamiento del html
-	    //calcularAlertas();
+	    calcularAlertas();
 	}		
     }
     xmlhttp.send("save="+JSON.stringify(json));
@@ -154,7 +156,7 @@ function seleccionCursoActual(){
 	    if(xmlhttp.readyState == 4 && xmlhttp.status == 200){		
 		$("#divtablaCursoActual").html(xmlhttp.responseText);	
 		$("#p_actual").text("Curso: " + obtenerCursoActual());
-		//calcularAlertas();
+		calcularAlertas();
 	    }		
 	}
 	xmlhttp.send("asig_actual="+JSON.stringify(asig_actual));
@@ -204,6 +206,7 @@ function obtenerAsignatura(){
 }
 
 $(document).on( "click", ".nota", function() {
+    limpiartabla();
     var header =  $(this).closest('table').find('th').eq($(this).index()).html();
     var json ={
 	    prueba: header,
@@ -214,10 +217,26 @@ $(document).on( "click", ".nota", function() {
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
-	    var respuesta = xmlhttp.responseText;
-	    // alert(respuesta);
+	    var respuesta = JSON.parse(xmlhttp.responseText);
+	    for (var i = 0; i < respuesta.Pruebas.length; i++) {
+		var nombre_prueba = respuesta.Pruebas[i];
+		var indice;
+		$("#tablaCursoActual").find(".header_prueba").each(function () {
+		    if($(this).html() == nombre_prueba){
+			indice = $(this).index();
+		    }
+		});
+
+		$("#tablaCursoActual tr .nota").each(function() {
+		    if($(this).index() == indice){
+			$(this).css('background-color', 'rgba(201, 76, 76, 0.1)');	
+		    }
+		});
+	    }
 	}
     }
     xmlhttp.send("header="+JSON.stringify(json));
 });
-
+function limpiartabla(){
+    $("#tablaCursoActual tr .nota").css('background-color', 'initial');
+}

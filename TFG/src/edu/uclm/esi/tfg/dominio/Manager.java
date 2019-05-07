@@ -138,13 +138,13 @@ public class Manager {
 				}
 			}
 		} catch (FileNotFoundException fileNotFoundException) {
-			System.out.println("The file not exists (No se encontró el fichero): " + fileNotFoundException);
+			System.out.println("The file not exists (No se ha encontrado el fichero): " + fileNotFoundException);
 		} catch (IOException ex) {
 			System.out.println("Error in file procesing (Error al procesar el fichero): " + ex);
 		}catch(NullPointerException e) {
 			System.out.println("Se ha leido el archivo completo" + e);
 		}
-		System.out.println("ARCHIVO DE NOTAS CARGADO CON ÉXITO");
+		System.out.println("ARCHIVO DE NOTAS CARGADO CON EXITO");
 	}
 
 	private boolean isRowEmpty(Row nextRow) {
@@ -465,18 +465,59 @@ public class Manager {
 		}
 		return ids;
 	}
+
 	public double getMediaPrueba(int id) {
 		double media = 0.0;
 		double suma = 0.0;
 		int size = 0;
 
 		for(int i = 0; i<calificaciones.size();i++){
-			if(calificaciones.get(i).getPrueba() == id) {
+			if(calificaciones.get(i).getPrueba() == id && calificaciones.get(i).getNota()!=(-1)) {
 				suma += calificaciones.get(i).getNota();
 				size ++;
 			}
 		}
 		media = suma/size;
 		return media;
+	}
+
+	public int getAprobadosPrueba(int prueba) {
+		int aprobados = 0;
+		for(int j = 0; j< pruebas.size();j++) {
+			for(int i = 0; i< calificaciones.size();i++) {
+				if(calificaciones.get(i).getPrueba() == prueba && pruebas.get(j).getId()== prueba) {
+					if(calificaciones.get(i).getNota() >= pruebas.get(j).getN_corte()) {
+						aprobados ++;
+					}
+				}
+			}
+		}
+		return aprobados;
+	}
+
+	public int getTotalAlumnosPrueba(int prueba) {
+		int alumnos_totales = 0;
+		for(int i = 0; i< calificaciones.size();i++) {
+			if(calificaciones.get(i).getPrueba() == prueba)
+				alumnos_totales++;
+		}
+		return alumnos_totales;
+	}
+
+	public double calculoAlertaAsig(int alumno, int asignatura, String curso) {
+		double alerta = 0.0;
+		Modelo modelo = new Modelo();
+		ArrayList<Prueba> pruebas_asig = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> calificaciones_alumno = getCalificacionesAlumno(alumno);
+		ArrayList<Calificacion> calificaciones_alumno_curso = new ArrayList<Calificacion>();
+
+		for(int i = 0; i<calificaciones_alumno.size();i++) {
+			if(calificaciones_alumno.get(i).getYear().equals(curso)) {
+				calificaciones_alumno_curso.add(calificaciones_alumno.get(i));
+			}
+		}
+		alerta = modelo.calcularAlerta(calificaciones_alumno_curso, pruebas_asig);
+
+		return alerta;
 	}
 }
