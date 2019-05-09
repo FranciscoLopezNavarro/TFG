@@ -15,10 +15,10 @@
 	int asignatura = Integer.parseInt(jso.optString("asignatura"));
 	String curso = jso.optString("curso").replace(" ", "");
 	JSONObject respuesta = new JSONObject();
-
+   
 	double riesgo = Manager.get().calculoAlertaAsig(alumno, asignatura, curso)*100;
 
-	respuesta.put("riesgo", riesgo);
+	respuesta.put("riesgo", String.format("%.2f", riesgo));
 	response.setContentType("application/json");
 	response.getWriter().write(respuesta.toString());
 %>

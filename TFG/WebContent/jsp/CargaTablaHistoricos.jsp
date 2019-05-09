@@ -31,7 +31,7 @@
 							String prueba = (String) pruebas.get(i).getTitulo();
 							String nota_max = Double.toString(pruebas.get(i).getN_max());
 					%>
-					<th><%=prueba + " (" + nota_max + ")"%></th>
+					<th><%=prueba%></th>
 					<%
 						}
 					%>

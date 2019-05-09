@@ -34,7 +34,7 @@ function crearFilaInicial()
     var fila = "<tr></tr>";
     var celdaAlumno = "<td contenteditable='true' class='alumno'></td>";
     var celdaNotas = "<td contenteditable='true' class='nota'></td>";
-    var celdasGenericas =  "<td><div class='progress'><div class='progress-bar progress-bar-striped' style='width: 30%'>30%</div></div></td>" +
+    var celdasGenericas =  "<td><div class'progress progress-striped active'><div class='progress-bar' role='progressbar' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div></div></td>" +
     "<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a>" +
     "<a><i class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>";
 
@@ -93,8 +93,13 @@ function calcularAlertas(){
 	xmlhttp.onreadystatechange = function(){
 	    if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 		var width = JSON.parse(xmlhttp.responseText);
+		//HECHO
 		//poner anchura a this barrita
-		 $('.progress-bar').css('width', width.riesgo+'%').attr('aria-valuenow', width.riesgo);
+		 $('.progress-bar').css('width', 'width.riesgo+"%"').attr('aria-valuenow', width.riesgo);
+//		 $(this).find('.progress-bar').css("width",function() {
+//			    return $(this).attr('aria-valuenow') + "%";
+//			    $(this).find('.progress-bar').css('width', width.riesgo + '%').attr('aria-valuenow', width.riesgo);
+//			});
 	    }
 	}
 

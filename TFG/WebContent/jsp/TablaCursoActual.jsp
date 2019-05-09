@@ -32,9 +32,10 @@
 					<%
 						for (int i = 0; i < pruebas.size(); i++) {
 							String prueba = (String) pruebas.get(i).getTitulo();
-							String nota_max = Double.toString(pruebas.get(i).getN_max());
+							double nota_max =pruebas.get(i).getN_max();
+							String puntos = Double.toString(nota_max);
 					%>
-					<th class="header_prueba" scope="col"><%=prueba + " (" + nota_max + ")"%></th>
+					<th class="header_prueba" scope="col"><%=prueba%></th>
 					<%
 						}
 					%>
@@ -73,7 +74,7 @@
 					%>
 					<td><div class="progress progress-striped active">
 							<div class="progress-bar" role="progressbar" aria-valuenow="0"
-								aria-valuemin="0" aria-valuemax="100"></div>
+								aria-valuemin="0" aria-valuemax="100" style="width:0%"></div>
 						</div></td>
 					<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a><a><i
 							class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>
