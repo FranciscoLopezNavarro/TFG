@@ -39,6 +39,7 @@ function mostrarAsigElegida(asignatura) {
 function calculoGraficos(){
     calcularGraficoCursoActual();
     calcularGraficoHistorico();
+    calcularGraficosPruebas();
 }
 
 function calcularGraficoCursoActual(){
