@@ -328,6 +328,8 @@ public class Manager {
 		return asignaturas;
 	}
 
+
+
 	public ArrayList<Prueba> getPruebasAsignatura(Integer asignatura) {
 		ArrayList<Prueba> pruebas_aux = new ArrayList<Prueba>();
 		for(int i=0;i<pruebas.size();i++) {
@@ -459,8 +461,6 @@ public class Manager {
 		for(int i =0; i<relacionesPruebas.size();i++) {
 			if(relacionesPruebas.get(i).getPrueba1()== id) {
 				ids.add(relacionesPruebas.get(i).getPrueba2());
-			}else if(relacionesPruebas.get(i).getPrueba2()== id){
-				ids.add(relacionesPruebas.get(i).getPrueba1());
 			}
 		}
 		return ids;
@@ -472,7 +472,7 @@ public class Manager {
 		int size = 0;
 
 		for(int i = 0; i<calificaciones.size();i++){
-			if(calificaciones.get(i).getPrueba() == id && calificaciones.get(i).getNota()!=(-1)) {
+			if(calificaciones.get(i).getPrueba() == id && calificaciones.get(i).getNota()!=(-1.0)) {
 				suma += calificaciones.get(i).getNota();
 				size ++;
 			}
@@ -495,14 +495,6 @@ public class Manager {
 		return aprobados;
 	}
 
-	public int getTotalAlumnosPrueba(int prueba) {
-		int alumnos_totales = 0;
-		for(int i = 0; i< calificaciones.size();i++) {
-			if(calificaciones.get(i).getPrueba() == prueba)
-				alumnos_totales++;
-		}
-		return alumnos_totales;
-	}
 
 	public double calculoAlertaAsig(int alumno, int asignatura, String curso) {
 		double alerta = 0.0;
@@ -520,4 +512,41 @@ public class Manager {
 
 		return alerta;
 	}
+	/**
+	 * Este metodo devuelve el numero de alumnos que aprueban una determinada asignatura
+	 * @param asignatura
+	 * @return counter
+	 */
+	public int alumnosApruebanAsig(ArrayList<Prueba> pruebas_asig) {
+		int counter = 0;
+		double nota_alumno;
+		for (int i = 0; i<alumnos.size();i++) {
+			nota_alumno = 0.0;
+
+			ArrayList<Calificacion> calificaciones_alumno = getCalificacionesAlumno(alumnos.get(i).getId());
+			for(int j = 0; j <calificaciones_alumno.size();j++) {
+				for(int k = 0;k<pruebas_asig.size();k++) {
+					if(calificaciones_alumno.get(j).getPrueba() == pruebas_asig.get(k).getId()) {
+						nota_alumno += calificaciones_alumno.get(j).getNota();
+					}
+				}
+			}
+			if (nota_alumno >= (nota_max(pruebas_asig)/2)){
+				counter++;
+			}
+		}
+		return counter;
+	}
+	/**
+	 * Este metodo devuelve la nota maxima que se puede sacar en una determinada asignatura
+	 * @param pruebas_asig
+	 * @return nota_max
+	 */
+	private double nota_max(ArrayList<Prueba> pruebas_asig) {
+		double nota_max = 0.0;
+		for(int i = 0; i<pruebas_asig.size();i++)
+			nota_max += pruebas_asig.get(i).getN_max();
+		return nota_max;
+	}
+
 }

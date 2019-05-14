@@ -29,6 +29,9 @@
 
 				if (nota.equals("") || nota.equals(" ")) {
 					System.out.println(prueba + " sin calificacion");
+					
+				}else if(nota.toUpperCase().equals("NP")){
+					Manager.get().registrarCalificacion(alumno, pruebas.get(i).getId(), curso, (-1.0));
 				} else {
 					Manager.get().registrarCalificacion(alumno, pruebas.get(i).getId(), curso, Double.parseDouble(nota));
 				}

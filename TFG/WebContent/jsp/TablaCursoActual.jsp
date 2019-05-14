@@ -32,7 +32,7 @@
 					<%
 						for (int i = 0; i < pruebas.size(); i++) {
 							String prueba = (String) pruebas.get(i).getTitulo();
-							double nota_max =pruebas.get(i).getN_max();
+							double nota_max = pruebas.get(i).getN_max();
 							String puntos = Double.toString(nota_max);
 					%>
 					<th class="header_prueba" scope="col"><%=prueba%></th>
@@ -63,19 +63,31 @@
 								for (int j = 0; j < notas.length; j++) {
 									if (notas[j] == -1.0) {
 					%>
-					<td contenteditable="true" class="nota">NP</td>
+					<td contenteditable="true" class="nota">NP
+						<div class="barra">
+							<div class="progress progress-striped active">
+								<div class="progress-bar" style="width: 0%"></div>
+							</div>
+						</div>
+					</td>
 					<%
 						} else {
 					%>
-					<td contenteditable="true" class="nota"><%=notas[j]%></td>
+					<td contenteditable="true" class="nota"><%=notas[j]%>
+						<div class="barra">
+							<div class="progress progress-striped active">
+								<div class="progress-bar" style="width: 0%"></div>
+							</div>
+						</div></td>
 					<%
 						}
 								}
 					%>
-					<td><div class="progress progress-striped active">
-							<div class="progress-bar" role="progressbar" aria-valuenow="0"
-								aria-valuemin="0" aria-valuemax="100" style="width:0%"></div>
-						</div></td>
+					<td class="alerta"><div
+							class="progress progress-striped active">
+							<div class="progress-bar" style="width: 0%"></div>
+						</div>
+						<div class="grado_riesgo"></div></td>
 					<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a><a><i
 							class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>
 					<%

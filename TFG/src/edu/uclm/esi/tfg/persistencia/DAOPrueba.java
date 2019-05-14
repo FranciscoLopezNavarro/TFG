@@ -114,8 +114,8 @@ public class DAOPrueba {
 				prueba.setTitulo(rs.getString("Titulo"));
 				prueba.setOrden(rs.getInt("Orden"));
 				prueba.setN_min(rs.getDouble("n_min"));
-				prueba.setN_corte(rs.getInt("n_corte"));
-				prueba.setN_max(rs.getInt("n_max"));
+				prueba.setN_corte(rs.getDouble("n_corte"));
+				prueba.setN_max(rs.getDouble("n_max"));
 				prueba.setAsig(rs.getInt("Asignatura"));
 
 				pruebas.add(prueba);

@@ -20,6 +20,10 @@ function addRow()
 		if($(this).is(".alumno") || $(this).is(".nota")){
 		    $(this).text('');
 		}
+		else if($(this).is(".alerta")){
+		    $(this).find(".progress-bar").css({width : 0 + '%'});
+		    $(this).find(".grado_riesgo").text('');
+		}
 	    });  
 	}
 
@@ -34,7 +38,7 @@ function crearFilaInicial()
     var fila = "<tr></tr>";
     var celdaAlumno = "<td contenteditable='true' class='alumno'></td>";
     var celdaNotas = "<td contenteditable='true' class='nota'></td>";
-    var celdasGenericas =  "<td><div class'progress progress-striped active'><div class='progress-bar' role='progressbar' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div></div></td>" +
+    var celdasGenericas =  "<td><div class'progress progress-striped active'><div class='progress-bar'></div></div><div class='grado_riesgo'></div></td>" +
     "<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a>" +
     "<a><i class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>";
 
@@ -64,10 +68,8 @@ function deleteRow(ref){
 	    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	    xmlhttp.onreadystatechange = function(){
 		if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
-		    //Comportamiento del html
-		    //calcularAlertas();
 		    alert("alumno borrado con exito");
-		    //$('#tablaCursoActual').DataTable().ajax.reload();
+		    calcularAlertas();
 		}		
 	    }
 	    xmlhttp.send("delete="+JSON.stringify(json));
@@ -76,11 +78,11 @@ function deleteRow(ref){
     }
     fila.remove();
 }
-//BORRAR REGISTRO DE LA TABLA CALIFICACION Y DE LAS ARRAYS DE ESE ALUMNO Y AÑO (No se borra info del alumno, pero no sé que hacer ocn ella)
-function calcularAlertas(){
-    // Loop through grabbing everything
 
-    $("#tablaCursoActual").find("tbody tr").each(function () {
+function calcularAlertas(){
+
+    $("#tablaCursoActual tbody tr").each(function () {
+	var filaActual = $(this);
 	var alumno = $(this).find(".alumno").html();
 	var json ={
 		alumno: alumno,
@@ -93,16 +95,11 @@ function calcularAlertas(){
 	xmlhttp.onreadystatechange = function(){
 	    if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 		var width = JSON.parse(xmlhttp.responseText);
-		//HECHO
-		//poner anchura a this barrita
-		 $('.progress-bar').css('width', 'width.riesgo+"%"').attr('aria-valuenow', width.riesgo);
-//		 $(this).find('.progress-bar').css("width",function() {
-//			    return $(this).attr('aria-valuenow') + "%";
-//			    $(this).find('.progress-bar').css('width', width.riesgo + '%').attr('aria-valuenow', width.riesgo);
-//			});
+		var riesgo = parseFloat((width.riesgo).replace(',', '.')).toFixed(2);
+		filaActual.find(".progress-bar").css({width : riesgo + '%'});
+		filaActual.find(".grado_riesgo").text(riesgo + '%');
 	    }
 	}
-
 	xmlhttp.send("calculo_alerta="+JSON.stringify(json));
     });
 
@@ -233,8 +230,13 @@ $(document).on( "click", ".nota", function() {
 		});
 
 		$("#tablaCursoActual tr .nota").each(function() {
-		    if($(this).index() == indice){
-			$(this).css('background-color', 'rgba(201, 76, 76, 0.1)');	
+		    var celda_nota = $(this)
+		    if(celda_nota.index() == indice){
+			celda_nota.css({'background-color': 'rgba(201, 76, 76, 0.1)'});
+			
+			//LLAMADA AL METODO CALCULAR PROBABILIDAD(PRUEBA, ALUMNO)
+			var div = celda_nota.find(".progress-bar");
+			div.css({'width': '40%'});
 		    }
 		});
 	    }
