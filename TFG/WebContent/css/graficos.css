@@ -1,0 +1,11 @@
+.bloque {
+	display: flex;
+	margin-bottom: 10%;
+	margin-top: 7%;
+	max-width: 90%;
+   
+}
+
+.bloque>div {
+	flex: 1; /*grow*/
+}
