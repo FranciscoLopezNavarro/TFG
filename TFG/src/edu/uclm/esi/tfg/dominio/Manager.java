@@ -418,7 +418,7 @@ public class Manager {
 	public void eliminarRegistro(String id) {
 		try {
 			if(DAOAlumno.eliminar(Integer.parseInt(id))) {
-				System.out.println("Alumno eliminado con éxito");
+				System.out.println("Alumno eliminado correctamente");
 				cargarAlumnos();
 				cargarCalificaciones();
 			}

@@ -22,7 +22,7 @@ function addRow()
 		}
 		else if($(this).is(".alerta")){
 		    $(this).find(".progress-bar").css({width : 0 + '%'});
-		    $(this).find(".grado_riesgo").text('');
+		    $(this).find(".grado_riesgo").text(' ');
 		}
 	    });  
 	}
@@ -96,8 +96,10 @@ function calcularAlertas(){
 	    if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 		var width = JSON.parse(xmlhttp.responseText);
 		var riesgo = parseFloat((width.riesgo).replace(',', '.')).toFixed(2);
-		filaActual.find(".progress-bar").css({width : riesgo + '%'});
-		filaActual.find(".grado_riesgo").text(riesgo + '%');
+		var celda_alerta = filaActual.find(".alerta");
+		
+		celda_alerta.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
+		celda_alerta.find(".grado_riesgo").text(riesgo + '%');
 	    }
 	}
 	xmlhttp.send("calculo_alerta="+JSON.stringify(json));
@@ -233,10 +235,11 @@ $(document).on( "click", ".nota", function() {
 		    var celda_nota = $(this)
 		    if(celda_nota.index() == indice){
 			celda_nota.css({'background-color': 'rgba(201, 76, 76, 0.1)'});
-			
+
 			//LLAMADA AL METODO CALCULAR PROBABILIDAD(PRUEBA, ALUMNO)
-			var div = celda_nota.find(".progress-bar");
-			div.css({'width': '40%'});
+			celda_nota.find(".progress").css({'display': ''});
+			celda_nota.find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': '40%'});
+			
 		    }
 		});
 	    }
@@ -246,4 +249,6 @@ $(document).on( "click", ".nota", function() {
 });
 function limpiartabla(){
     $("#tablaCursoActual tr .nota").css('background-color', 'initial');
+    $("#tablaCursoActual tr .nota").find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': '0%'});
+    $("#tablaCursoActual tr .nota").find(".progress").css({'display': 'none'});
 }

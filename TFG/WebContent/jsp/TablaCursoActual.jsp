@@ -64,9 +64,8 @@
 									if (notas[j] == -1.0) {
 					%>
 					<td contenteditable="true" class="nota">NP
-						<div class="barra">
-							<div class="progress progress-striped active">
-								<div class="progress-bar" style="width: 0%"></div>
+						<div class="progress" style = "display : none">
+							<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" style="width: 0%">
 							</div>
 						</div>
 					</td>
@@ -74,20 +73,28 @@
 						} else {
 					%>
 					<td contenteditable="true" class="nota"><%=notas[j]%>
-						<div class="barra">
-							<div class="progress progress-striped active">
-								<div class="progress-bar" style="width: 0%"></div>
+						<div class="progress" style = "display : none">
+							<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" style="width: 0%">
 							</div>
 						</div></td>
 					<%
 						}
 								}
 					%>
-					<td class="alerta"><div
-							class="progress progress-striped active">
-							<div class="progress-bar" style="width: 0%"></div>
+					<td class="alerta">
+						<div class="progress">
+							<div class="progress-bar progress-bar-success" style="width: 0%">
+								<span class="sr-only">35% completado (éxito)</span>
+							</div>
+							<div class="progress-bar progress-bar-warning" style="width: 0%">
+								<span class="sr-only">20% completado (aviso)</span>
+							</div>
+							<div class="progress-bar progress-bar-danger" style="width: 0%">
+								<span class="sr-only">10% completado (peligro)</span>
+							</div>
 						</div>
-						<div class="grado_riesgo"></div></td>
+						<div class="grado_riesgo"></div>
+					</td>
 					<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a><a><i
 							class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>
 					<%
