@@ -97,7 +97,7 @@ function calcularAlertas(){
 		var width = JSON.parse(xmlhttp.responseText);
 		var riesgo = parseFloat((width.riesgo).replace(',', '.')).toFixed(2);
 		var celda_alerta = filaActual.find(".alerta");
-		
+
 		celda_alerta.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
 		celda_alerta.find(".grado_riesgo").text(riesgo + '%');
 	    }
@@ -237,9 +237,13 @@ $(document).on( "click", ".nota", function() {
 			celda_nota.css({'background-color': 'rgba(201, 76, 76, 0.1)'});
 
 			//LLAMADA AL METODO CALCULAR PROBABILIDAD(PRUEBA, ALUMNO)
-			celda_nota.find(".progress").css({'display': ''});
+			celda_nota.find(".progress").css({'display': '' ,
+			    'width' :'300%', 
+			    'margin-left': '-100%', 
+			    'margin-bottom': '-95%',
+			});
 			celda_nota.find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': '40%'});
-			
+
 		    }
 		});
 	    }
