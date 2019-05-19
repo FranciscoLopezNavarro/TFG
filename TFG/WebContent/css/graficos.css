@@ -3,9 +3,32 @@
 	margin-bottom: 10%;
 	margin-top: 7%;
 	max-width: 90%;
-   
+	margin-left: 5%;
+}
+
+h3#asigElegida {
+	margin-left: 2%;
+}
+
+.col-md-6.mb-3 {
+	margin-left: 2%;
 }
 
 .bloque>div {
 	flex: 1; /*grow*/
+}
+
+div#grafico_curso_actual {
+    height: 400px;
+}
+
+div#grafico_historico {
+    height: 400px;
+}
+.tab-contents {
+	height: 400px; /*grow*/
+}
+
+.tabs {
+    margin-bottom: 5%;
 }

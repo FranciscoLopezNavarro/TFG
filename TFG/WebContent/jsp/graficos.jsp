@@ -83,8 +83,10 @@
 	</div>
 	<div id="graficos" style="display: none">
 		<div class="bloque">
-			<div id="grafico_curso_actual"></div>
-		
+			<div id="grafico_curso_actual">
+				<div id="info_curso_actual"></div>
+			</div>
+
 			<div id="grafico_historico"></div>
 		</div>
 		<div class="tabs">

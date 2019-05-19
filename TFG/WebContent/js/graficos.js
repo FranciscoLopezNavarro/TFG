@@ -31,7 +31,7 @@ function mostrarAsigElegida(asignatura) {
     div.style.display ='';
     $('br').remove();
     document.getElementById("asigElegida").innerHTML = "Asignatura elegida: " + asignatura;
-    
+
     var graficos = document.getElementById("graficos");
     graficos.style.display ='';
 }
@@ -39,130 +39,152 @@ function mostrarAsigElegida(asignatura) {
 function calculoGraficos(){
     calcularGraficoCursoActual();
     calcularGraficoHistorico();
-    calcularGraficosPruebas();
+    calcularGraficoPruebas();
 }
 
 function calcularGraficoCursoActual(){
+$("#info_curso_actual").text("Alumnos en riesgo, curso: " + obtenerCursoActual());
     
-	// Create chart instance
-	var chart = am4core.create("grafico_curso_actual", am4charts.PieChart);
+    //Se crea el grafico
+    var total_alumnos = 70;
+    var alumnos_riesgo = 10;
+    var chart = am4core.create("grafico_curso_actual", am4charts.PieChart);
 
-	// Add data
-	chart.data = [ {
-	  "country": "Lithuania",
-	  "litres": 501.9
-	}, {
-	  "country": "Czech Republic",
-	  "litres": 301.9
-	}, {
-	  "country": "Ireland",
-	  "litres": 201.1
-	}, {
-	  "country": "Germany",
-	  "litres": 165.8
-	}, {
-	  "country": "Australia",
-	  "litres": 139.9
-	}, {
-	  "country": "Austria",
-	  "litres": 128.3
-	}, {
-	  "country": "UK",
-	  "litres": 99
-	}, {
-	  "country": "Belgium",
-	  "litres": 60
-	}, {
-	  "country": "The Netherlands",
-	  "litres": 50
-	} ];
+    // Se añaden los datos
+    chart.data = [ {
+	"alumnos": "En riesgo",
+	"numero": alumnos_riesgo
+    }, {
+	"alumnos": "Sin riesgo",
+	"numero": (total_alumnos - alumnos_riesgo)
+    }];
 
-	// Add and configure Series
-	var pieSeries = chart.series.push(new am4charts.PieSeries());
-	pieSeries.dataFields.value = "litres";
-	pieSeries.dataFields.category = "country";
-	pieSeries.slices.template.stroke = am4core.color("#fff");
-	pieSeries.slices.template.strokeWidth = 2;
-	pieSeries.slices.template.strokeOpacity = 1;
+    var pieSeries = chart.series.push(new am4charts.PieSeries());
+    pieSeries.dataFields.value = "numero";
+    pieSeries.dataFields.category = "alumnos";
 
-	// This creates initial animation
-	pieSeries.hiddenState.properties.opacity = 1;
-	pieSeries.hiddenState.properties.endAngle = -90;
-	pieSeries.hiddenState.properties.startAngle = -90;
 
-	 // end am4core.ready()
+    //Coloress
+    pieSeries.colors.list = [
+	am4core.color("#ce5c5c"),
+	am4core.color("#438BCA")
+	];
+
+    //Personalización del grafico
+    pieSeries.labels.template.text = "{category}: {value.value}";
+    pieSeries.slices.template.stroke = am4core.color("#fff");
+    pieSeries.slices.template.strokeWidth = 2;
+    pieSeries.slices.template.strokeOpacity = 1;
+
+    // This creates initial animation
+    pieSeries.hiddenState.properties.opacity = 1;
+    pieSeries.hiddenState.properties.endAngle = -90;
+    pieSeries.hiddenState.properties.startAngle = -90;
+
+    // Posicionamiento
+    chart.paddingTop = am4core.percent(10);
+    
+
+    // Leyenda
+    chart.legend = new am4charts.Legend();
+    chart.legend.labels.template.text = "Alumnos: [bold {color}]{name}[/]";
+    chart.legend.valueLabels.template.text = "{value.value}";
+    chart.legend.useDefaultMarker = true;
+
+    var marker = chart.legend.markers.template.children.getIndex(0);
+    marker.cornerRadius(12, 12, 12, 12);
+    marker.strokeWidth = 2;
+    marker.strokeOpacity = 1;
+    marker.stroke = am4core.color("#ccc");
+
 }
 function calcularGraficoHistorico(){
+    $("#info_historico").text("Aprobados por año");
+    //Creamos el grafico e insertamos los valores
     var chart = am4core.create("grafico_historico", am4charts.XYChart);
 
- // Add data
- chart.data = [{
-   "country": "USA",
-   "visits": 2025
- }, {
-   "country": "China",
-   "visits": 1882
- }, {
-   "country": "Japan",
-   "visits": 1809
- }, {
-   "country": "Germany",
-   "visits": 1322
- }, {
-   "country": "UK",
-   "visits": 1122
- }, {
-   "country": "France",
-   "visits": 1114
- }, {
-   "country": "India",
-   "visits": 984
- }, {
-   "country": "Spain",
-   "visits": 711
- }, {
-   "country": "Netherlands",
-   "visits": 665
- }, {
-   "country": "Russia",
-   "visits": 580
- }, {
-   "country": "South Korea",
-   "visits": 443
- }, {
-   "country": "Canada",
-   "visits": 441
- }, {
-   "country": "Brazil",
-   "visits": 395
- }];
+    var years = ['2017', '2018', '2019','2020'];
+    var aprobados = ['35','60','50','60'];
+    var data = [];
+    var i = 0;
 
- // Create axes
+    for (i = 0; i <= years.length; i++) {
+	data.push(
+		{ year: years[i],
+		    aprobados: aprobados[i]});
+    }
 
- var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
- categoryAxis.dataFields.category = "country";
- categoryAxis.renderer.grid.template.location = 0;
- categoryAxis.renderer.minGridDistance = 30;
+    chart.data = data;
+    chart.cursor= new am4charts.XYCursor();
+    chart.responsive.enabled = true;
+    // Create axes
 
- categoryAxis.renderer.labels.template.adapter.add("dy", function(dy, target) {
-   if (target.dataItem && target.dataItem.index & 2 == 2) {
-     return dy + 25;
-   }
-   return dy;
- });
+    var xAxis = chart.xAxes.push(new am4charts.ValueAxis());
+    var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
 
- var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    xAxis.title.text = "Año";
+    yAxis.title.text = "Aprobados";
+    xAxis.dataFields.category = "year";
 
- // Create series
- var series = chart.series.push(new am4charts.ColumnSeries());
- series.dataFields.valueY = "visits";
- series.dataFields.categoryX = "country";
- series.name = "Visits";
- series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
- series.columns.template.fillOpacity = .8;
 
- var columnTemplate = series.columns.template;
- columnTemplate.strokeWidth = 2;
- columnTemplate.strokeOpacity = 1;
+    // Create series
+    var series1 = chart.series.push(new am4charts.LineSeries());
+    series1.dataFields.valueX = "year";
+    series1.dataFields.valueY = "aprobados";
+    series1.strokeWidth = 2;
 
+    var bullet1 = series1.bullets.push(new am4charts.CircleBullet());
+    series1.heatRules.push({
+	target: bullet1.circle,
+	min: 10,
+	max: 20,
+	property: "radius"
+    });
+
+    bullet1.tooltipText = "{year}: [bold]{aprobados}[/]";
+   
+}
+function calcularGraficoPruebas(){
+    $(".tab-contents").each(function(){
+	var div = $(this).prop("id");
+
+
+
+	var aprobados_prueba = "37";
+	var aprobados_prueba_y_asig = "14";
+	var data = [];
+//	var i = 0;
+//
+//	for (i = 0; i <= years.length; i++) {
+//	    data.push(
+//		    { prueba: div,
+//			aprobados: aprobados[i]});
+//	}
+
+	data = [{
+	    "prueba": div,
+	    "aprobados": aprobados_prueba
+	},{
+	    "prueba": div + " + asignatura",
+	    "aprobados": aprobados_prueba_y_asig
+	}];
+	
+	var chart = am4core.create(div, am4charts.XYChart);
+	chart.data = data;
+	
+	var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+	categoryAxis.dataFields.category = "prueba";
+
+	var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+	valueAxis.title.text = "Aprobados";
+	
+	var series = chart.series.push(new am4charts.ColumnSeries());
+	series.name = "Aprobados";
+	series.columns.template.fill = am4core.color("#104547"); 
+	series.dataFields.valueY = "aprobados";
+	series.dataFields.categoryX = "prueba";
+	series.columns.template.width = am4core.percent(10);
+	
+	chart.paddingRight = am4core.percent(10);
+    });
 }
