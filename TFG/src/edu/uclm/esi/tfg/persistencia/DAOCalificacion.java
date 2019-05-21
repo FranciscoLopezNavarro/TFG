@@ -15,9 +15,9 @@ public class DAOCalificacion {
 
 		try {
 
-			String consulta = "INSERT INTO calificacion (alumno,prueba, nota,año) VALUES (?, ?, ?, ?) "
+			String consulta = "INSERT INTO calificacion (alumno,prueba, nota,year) VALUES (?, ?, ?, ?) "
 					+ "ON DUPLICATE KEY UPDATE "
-					+ "alumno = VALUES(alumno), prueba = VALUES(prueba), nota = VALUES(nota), año = VALUES(año)";
+					+ "alumno = VALUES(alumno), prueba = VALUES(prueba), nota = VALUES(nota), year = VALUES(year)";
 			ps = broker.getConex().prepareStatement(consulta);
 			ps.setInt(1, alumno);
 			ps.setInt(2, prueba);
@@ -90,7 +90,7 @@ public class DAOCalificacion {
 				cali.setAlumno(rs.getInt("Alumno"));
 				cali.setPrueba(rs.getInt("Prueba"));
 				cali.setNota(rs.getDouble("Nota"));
-				cali.setYear(rs.getString("Año"));
+				cali.setYear(rs.getString("Year"));
 
 				calificaciones.add(cali);
 			}

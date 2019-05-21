@@ -124,8 +124,8 @@ CREATE TABLE `Calificacion` (
   `Alumno` int(11) NOT NULL,
   `Prueba` int(11) NOT NULL,
   `Nota` double NOT NULL,
-  `Año` varchar(30) NOT NULL,
-  PRIMARY KEY (`Alumno`,`Prueba`,`Nota`,`Año`),
+  `Year` varchar(30) NOT NULL,
+  PRIMARY KEY (`Alumno`,`Prueba`,`Nota`,`Year`),
   KEY `FK_Prueba_idx` (`Prueba`),
   CONSTRAINT `FK_Alumno_Calificacion` FOREIGN KEY (`Alumno`) REFERENCES `Alumno` (`idAlumno`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_Prueba_Calificacion` FOREIGN KEY (`Prueba`) REFERENCES `Prueba` (`idPrueba`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -231,4 +231,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-04-30  1:11:20
+-- Dump completed on 2019-05-21 21:48:53

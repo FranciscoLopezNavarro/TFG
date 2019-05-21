@@ -43,8 +43,8 @@ function calculoGraficos(){
 }
 
 function calcularGraficoCursoActual(){
-$("#info_curso_actual").text("Alumnos en riesgo, curso: " + obtenerCursoActual());
-    
+    $("#h3cursoActual").text("Porcentaje (%) de alumnos en riesgo. Curso: " + obtenerCursoActual());
+
     //Se crea el grafico
     var total_alumnos = 70;
     var alumnos_riesgo = 10;
@@ -83,7 +83,7 @@ $("#info_curso_actual").text("Alumnos en riesgo, curso: " + obtenerCursoActual()
 
     // Posicionamiento
     chart.paddingTop = am4core.percent(10);
-    
+
 
     // Leyenda
     chart.legend = new am4charts.Legend();
@@ -99,7 +99,7 @@ $("#info_curso_actual").text("Alumnos en riesgo, curso: " + obtenerCursoActual()
 
 }
 function calcularGraficoHistorico(){
-    $("#info_historico").text("Aprobados por año");
+    $("#h3historico").text("Número de alumnos aprobados anualmente");
     //Creamos el grafico e insertamos los valores
     var chart = am4core.create("grafico_historico", am4charts.XYChart);
 
@@ -142,24 +142,15 @@ function calcularGraficoHistorico(){
     });
 
     bullet1.tooltipText = "{year}: [bold]{aprobados}[/]";
-   
+
 }
 function calcularGraficoPruebas(){
     $(".tab-contents").each(function(){
 	var div = $(this).prop("id");
 
-
-
-	var aprobados_prueba = "37";
-	var aprobados_prueba_y_asig = "14";
+	var aprobados_prueba = aprobadosPrueba(div);
+	var aprobados_prueba_y_asig = "60";
 	var data = [];
-//	var i = 0;
-//
-//	for (i = 0; i <= years.length; i++) {
-//	    data.push(
-//		    { prueba: div,
-//			aprobados: aprobados[i]});
-//	}
 
 	data = [{
 	    "prueba": div,
@@ -168,23 +159,55 @@ function calcularGraficoPruebas(){
 	    "prueba": div + " + asignatura",
 	    "aprobados": aprobados_prueba_y_asig
 	}];
-	
+
 	var chart = am4core.create(div, am4charts.XYChart);
 	chart.data = data;
-	
+
 	var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
 	categoryAxis.dataFields.category = "prueba";
 
 	var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 	valueAxis.title.text = "Aprobados";
-	
+
 	var series = chart.series.push(new am4charts.ColumnSeries());
 	series.name = "Aprobados";
 	series.columns.template.fill = am4core.color("#104547"); 
 	series.dataFields.valueY = "aprobados";
 	series.dataFields.categoryX = "prueba";
 	series.columns.template.width = am4core.percent(10);
-	
+	series.columns.template.fill = am4core.color("#438bca");
+	series.fillOpacity = 0.85;
 	chart.paddingRight = am4core.percent(10);
     });
+}
+
+function aprobadosPrueba(tituloPrueba){
+    var aprobados;
+    var asignatura = obtenerAsignatura();
+    var json = {
+	    prueba: tituloPrueba,
+	    asignatura : asignatura
+    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/aprobadosPrueba.jsp", false);
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    var respuesta = JSON.parse(xmlhttp.responseText);
+	    aprobados = respuesta.aprobados;
+	}		
+    }
+    xmlhttp.send("datos_prueba="+JSON.stringify(json));
+    return aprobados;
+}
+function aprobadosPruebaAsig(){
+    xmlhttp.open("POST","../jsp/CargaTablaHistoricos.jsp");
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    $("#divtablaHistorico").html(xmlhttp.responseText);	
+	    $("#p_historico").empty();
+	}		
+    }
+    xmlhttp.send("asignatura="+seleccionado);
 }

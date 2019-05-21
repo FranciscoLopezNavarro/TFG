@@ -83,11 +83,14 @@
 	</div>
 	<div id="graficos" style="display: none">
 		<div class="bloque">
-			<div id="grafico_curso_actual">
-				<div id="info_curso_actual"></div>
+			<div id="curso_actual">
+				<h4 id="h3cursoActual"></h4>
+				<div id="grafico_curso_actual"></div>
 			</div>
-
-			<div id="grafico_historico"></div>
+			<div id="historico">
+				<h4 id="h3historico"></h4>
+				<div id="grafico_historico"></div>
+			</div>
 		</div>
 		<div class="tabs">
 			<div class="tab-button-outer">
@@ -115,13 +118,12 @@
 					%>
 				</select>
 			</div>
+
 			<%
 				for (int i = 0; i < pruebas_asignatura.size(); i++) {
 					String nombre_prueba = (String) pruebas_asignatura.get(i).getTitulo();
 			%>
-			<div id="<%=nombre_prueba%>" class="tab-contents">
-				<h2><%=nombre_prueba%></h2>
-			</div>
+			<div id="<%=nombre_prueba%>" class="tab-contents"></div>
 			<%
 				}
 			%>
