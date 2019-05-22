@@ -15,7 +15,7 @@
 
 	try {
 		String alumno_delete = jso.optString("alumno");
-		String year = jso.optString("year");
+		String year = jso.optString("year").replace(" ", "");;
 		if (alumno_delete != null) {
 			Manager.get().eliminarRegistro(Integer.parseInt(alumno_delete), year);
 		}

@@ -538,11 +538,13 @@ public class Manager {
 	public void eliminarRegistro(int id, String year) {
 		try {
 			if (DAOCalificacion.eliminar(id,year)) {
+				System.out.println("Calificaciones eliminadas");
 				if(!DAOCalificacion.existeRegistroAlumno(id)) {
 					DAOAlumno.eliminar(id);
+					System.out.println("Alumno eliminado");
 				}
 
-				System.out.println("Alumno eliminado correctamente");
+
 				cargarAlumnos();
 				cargarCalificaciones();
 			}

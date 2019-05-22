@@ -110,8 +110,9 @@ public class DAOCalificacion {
 			ps = broker.getConex().prepareStatement(consulta);
 			ps.setInt(1, id);
 			ps.setString(2,year);
-
+			System.out.println(ps);
 			ps.executeUpdate();
+			
 			return true;
 		}catch (Exception e) {
 			System.err.println("Error" + e);
@@ -128,7 +129,7 @@ public class DAOCalificacion {
 			String consulta ="SELECT count(*) FROM calificacion WHERE alumno = ?;";
 			ps = broker.getConex().prepareStatement(consulta);
 			ps.setInt(1, id);
-			ps.executeQuery();;
+			rs = ps.executeQuery();;
 
 			int n = 0;
 			if ( rs.next() ) { 
