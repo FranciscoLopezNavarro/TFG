@@ -62,7 +62,8 @@ function deleteRow(ref){
 	var r = confirm("¿Estás seguro que quieres eliminar esta fila?\n Al borrar la fila también eliminarás cualquier información de este alumno referente al curso actual");
 	if( r == true ) {
 	    fila.remove();
-	    var json = {alumno: alumno}
+	    var json = {alumno: alumno,
+		    year: obtenerCursoActual()}
 	    var xmlhttp = new XMLHttpRequest();
 	    xmlhttp.open("POST","../jsp/eliminarFilas.jsp");
 	    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

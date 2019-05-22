@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -83,10 +84,10 @@ public class Manager {
 					Iterator<Cell> cellIterator = nextRow.cellIterator();
 
 					// Vamos a leer la primera linea que nos dira el numero de pruebas que tiene la
-					// asignatura así como su nombre
+					// asignatura asï¿½ como su nombre
 					if (rowIndex == 0) {
-						// Se descartan las 2 primeras columnas que corresponden al Nº de alumno y al
-						// año, vendrá así en todos los excel de notas
+						// Se descartan las 2 primeras columnas que corresponden al Nï¿½ de alumno y al
+						// aï¿½o, vendrï¿½ asï¿½ en todos los excel de notas
 						cellIterator.next();
 						cellIterator.next();
 						// Comprobamos el numero de pruebas que corresponden a esa asignatura
@@ -107,7 +108,7 @@ public class Manager {
 							e.printStackTrace();
 						}
 
-						// AHORA LEEMOS LAS SIGUIENTES CELDAS DE LA FILA, EL SEGUNDO VALOR SERA EL AÑO Y
+						// AHORA LEEMOS LAS SIGUIENTES CELDAS DE LA FILA, EL SEGUNDO VALOR SERA EL Aï¿½O Y
 						// DESPUES SE LEEN TANTAS CELDAS COMO PRUEBAS HAYAMOS LEIDO EN LA PRIMERA LINEA
 						// Bucle para las celdas
 						Double nota;
@@ -200,7 +201,7 @@ public class Manager {
 		// con su contenido
 		StringTokenizer stSaltoLinea = new StringTokenizer(getContenidoFichero(fichero), "/");
 
-		// Con esto recorremos todas las línas del archivo
+		// Con esto recorremos todas las lï¿½nas del archivo
 		while (stSaltoLinea.hasMoreTokens()) {
 
 			linea = stSaltoLinea.nextToken();
@@ -208,10 +209,10 @@ public class Manager {
 
 			StringTokenizer stPuntoComa = new StringTokenizer(linea, ";");
 
-			// Si el primer elemento es % todo lo que viene a continuación hasta el
+			// Si el primer elemento es % todo lo que viene a continuaciï¿½n hasta el
 			// siguiente salto de linea
-			// es información referente a una asignatura. En cambio si viene # será
-			// información referente a
+			// es informaciï¿½n referente a una asignatura. En cambio si viene # serï¿½
+			// informaciï¿½n referente a
 			// relaciones entre pruebas
 
 			if (linea.startsWith("%")) {
@@ -391,7 +392,7 @@ public class Manager {
 		return id;
 	}
 
-	
+
 	/////////////////////////////////////////////////////METODOS FUNCIONALES////////////////////////////////////////////
 
 	/**
@@ -534,9 +535,13 @@ public class Manager {
 	 * Elimina un alumno y sus calificaciones de la Base de Datos
 	 * @param id
 	 */
-	public void eliminarRegistro(String id) {
+	public void eliminarRegistro(int id, String year) {
 		try {
-			if (DAOAlumno.eliminar(Integer.parseInt(id))) {
+			if (DAOCalificacion.eliminar(id,year)) {
+				if(!DAOCalificacion.existeRegistroAlumno(id)) {
+					DAOAlumno.eliminar(id);
+				}
+
 				System.out.println("Alumno eliminado correctamente");
 				cargarAlumnos();
 				cargarCalificaciones();
@@ -695,4 +700,44 @@ public class Manager {
 		return nota_max;
 	}
 
+	public double[] devolverNotas(Integer alumno, String year, Integer n_pruebas,ArrayList<Calificacion> calificaciones) {
+		double[] notas = new double[n_pruebas];
+		Integer aux = 0;
+		for (int i = 0; i < calificaciones.size(); i++) {
+			if (calificaciones.get(i).getAlumno() == alumno && calificaciones.get(i).getYear().equals(year)) {
+				notas[aux] = calificaciones.get(i).getNota();
+				aux++;
+			}
+		}
+
+		return notas;
+	}
+
+	public Map<Integer, ArrayList<String>> obtenerHashMap(ArrayList<Calificacion> calificaciones) {
+		Map<Integer, ArrayList<String>> mapa = new HashMap<Integer,ArrayList<String>>();
+		for (Calificacion  i : calificaciones) {
+			int alumno = i.getAlumno();
+			if(!mapa.containsKey(alumno)) {
+				ArrayList<String> years = new ArrayList<String>();
+				mapa.put(alumno,years);
+			}
+		}
+		for (Calificacion  i : calificaciones) {
+			int alumno = i.getAlumno();
+			String year = i.getYear();
+
+			ArrayList<String> aux = mapa.get(alumno);
+			if(!aux.contains(year)) {
+				aux.add(year);
+			}
+
+		}
+		//		for (Map.Entry<Integer, ArrayList<String>> entry : mapa.entrySet()) {
+		//			System.out.println(entry.getKey() + " = " + entry.getValue().size());
+		//		}
+		return mapa;
+	}
+
+
 }
+

@@ -47,35 +47,40 @@
 			<!--FIN CABECERA-->
 			<tbody>
 				<%
-					Map<Integer, String> alumno_year = obtenerHashMap(calificaciones);
-					if (!alumno_year.isEmpty()) {
-						Iterator<Map.Entry<Integer, String>> it = alumno_year.entrySet().iterator();
-						while (it.hasNext()) {
-							Map.Entry<Integer, String> dupla = (Map.Entry<Integer, String>) it.next();
-							Integer alumno = dupla.getKey();
-							String year = dupla.getValue();
+					Map<Integer, ArrayList<String>> alumno_year_actual = Manager.get().obtenerHashMap(calificaciones);
+					Iterator<Map.Entry<Integer, ArrayList<String>>> it = alumno_year_actual.entrySet().iterator();
+
+					while (it.hasNext()) {
+						Map.Entry<Integer, ArrayList<String>> dupla = (Map.Entry<Integer, ArrayList<String>>) it.next();
+						Integer alumno = dupla.getKey();
+						ArrayList<String> years = dupla.getValue();
+
+						for (int i = 0; i < years.size(); i++) {
+							String year = years.get(i);
 				%>
 
 				<tr>
 					<td contenteditable="true" class="alumno"><%=alumno%></td>
 					<%
-						double[] notas = devolverNotas(alumno, year, pruebas.size(), calificaciones);
+						double[] notas = Manager.get().devolverNotas(alumno, year, pruebas.size(), calificaciones);
 								for (int j = 0; j < notas.length; j++) {
 									if (notas[j] == -1.0) {
 					%>
 					<td contenteditable="true" class="nota">NP
-						<div class="progress" style = "display : none">
-							<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" style="width: 0%">
-							</div>
+						<div class="progress" style="display: none">
+							<div
+								class="progress-bar progress-bar-striped bg-success progress-bar-animated"
+								style="width: 0%"></div>
 						</div>
 					</td>
 					<%
 						} else {
 					%>
 					<td contenteditable="true" class="nota"><%=notas[j]%>
-						<div class="progress" style = "display : none">
-							<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" style="width: 0%">
-							</div>
+						<div class="progress" style="display: none">
+							<div
+								class="progress-bar progress-bar-striped bg-success progress-bar-animated"
+								style="width: 0%"></div>
 						</div></td>
 					<%
 						}
@@ -107,28 +112,3 @@
 	</form>
 </body>
 </html>
-<%!public double[] devolverNotas(Integer alumno, String year, Integer n_pruebas,
-			ArrayList<Calificacion> calificaciones) {
-		double[] notas = new double[n_pruebas];
-		Integer aux = 0;
-		for (int i = 0; i < calificaciones.size(); i++) {
-			if (calificaciones.get(i).getAlumno() == alumno && calificaciones.get(i).getYear().equals(year)) {
-				notas[aux] = calificaciones.get(i).getNota();
-				aux++;
-			}
-		}
-
-		return notas;
-	}%>
-<%!public Map<Integer, String> obtenerHashMap(ArrayList<Calificacion> calificaciones) {
-
-		Map<Integer, String> mapa = new HashMap<Integer, String>();
-		Iterator<Map.Entry<Integer, String>> it = mapa.entrySet().iterator();
-		for (int i = 0; i < calificaciones.size(); i++) {
-			int alumno = calificaciones.get(i).getAlumno();
-			String year = calificaciones.get(i).getYear();
-
-			mapa.put(alumno, year);
-		}
-		return mapa;
-	}%>

@@ -101,6 +101,49 @@ public class DAOCalificacion {
 		return calificaciones;
 	}
 
+	public static boolean eliminar(int id, String year) {
+		SQLBroker broker = new SQLBroker();
+		PreparedStatement ps =null;
+		try {
 
+			String consulta ="DELETE FROM Calificacion WHERE alumno = ? and year = ?;";
+			ps = broker.getConex().prepareStatement(consulta);
+			ps.setInt(1, id);
+			ps.setString(2,year);
+
+			ps.executeUpdate();
+			return true;
+		}catch (Exception e) {
+			System.err.println("Error" + e);
+			return false;
+		}
+	}
+
+	public static boolean existeRegistroAlumno(int id) {
+		SQLBroker broker = new SQLBroker();
+		PreparedStatement ps =null;
+		ResultSet rs = null;
+		try {
+
+			String consulta ="SELECT count(*) FROM calificacion WHERE alumno = ?;";
+			ps = broker.getConex().prepareStatement(consulta);
+			ps.setInt(1, id);
+			ps.executeQuery();;
+
+			int n = 0;
+			if ( rs.next() ) { 
+				n = rs.getInt(1);
+			}
+			if ( n > 0 ) {
+				return true;  
+			}else {
+				return false;
+			}
+
+		}catch (Exception e) {
+			System.err.println("Error" + e);
+			return false;
+		}
+	}
 
 }

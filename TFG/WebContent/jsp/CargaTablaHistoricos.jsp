@@ -32,8 +32,11 @@
 							String nota_max = Double.toString(pruebas.get(i).getN_max());
 					%>
 					<th><%=prueba%>
-					<div class="nota_max">[0 - <%=nota_max%>]</div></th>
-					
+						<div class="nota_max">
+							[0 -
+							<%=nota_max%>]
+						</div></th>
+
 					<%
 						}
 					%>
@@ -44,22 +47,25 @@
 			<!-- CONTENIDO EN BASE A LA TABLA CALIFICACIONES -->
 			<tbody>
 				<%
-					Map<Integer, String> alumno_year = obtenerHashMap(calificaciones);
-					System.out.println(alumno_year.size());
-					Iterator<Map.Entry<Integer, String>> it = alumno_year.entrySet().iterator();
+					Map<Integer, ArrayList<String>> alumno_year = Manager.get().obtenerHashMap(calificaciones);
+					Iterator<Map.Entry<Integer, ArrayList<String>>> it = alumno_year.entrySet().iterator();
+
 					while (it.hasNext()) {
-						Map.Entry<Integer, String> dupla = (Map.Entry<Integer, String>) it.next();
+						Map.Entry<Integer, ArrayList<String>> dupla = (Map.Entry<Integer, ArrayList<String>>) it.next();
 						Integer alumno = dupla.getKey();
-						String year = dupla.getValue();
+						ArrayList<String> years = dupla.getValue();
+
+						for (int i = 0; i < years.size(); i++) {
+							String year = years.get(i);
 				%>
 				<tr>
 					<td><%=alumno%></td>
 					<td><%=year%></td>
 
 					<%
-						double[] notas = devolverNotas(alumno, year, pruebas.size(), calificaciones);
-							for (int j = 0; j < notas.length; j++) {
-								if (notas[j] == -1.0) {
+						double[] notas = Manager.get().devolverNotas(alumno, year, pruebas.size(), calificaciones);
+								for (int j = 0; j < notas.length; j++) {
+									if (notas[j] == -1.0) {
 					%>
 					<td>NP</td>
 					<%
@@ -68,6 +74,7 @@
 					<td><%=notas[j]%></td>
 					<%
 						}
+								}
 							}
 						}
 					%>
@@ -77,29 +84,3 @@
 	</form>
 </body>
 </html>
-
-<%!public double[] devolverNotas(Integer alumno, String year, Integer n_pruebas,
-			ArrayList<Calificacion> calificaciones) {
-		double[] notas = new double[n_pruebas];
-		Integer aux = 0;
-		for (int i = 0; i < calificaciones.size(); i++) {
-			if (calificaciones.get(i).getAlumno() == alumno && calificaciones.get(i).getYear().equals(year)) {
-				notas[aux] = calificaciones.get(i).getNota();
-				aux++;
-			}
-		}
-
-		return notas;
-	}%>
-<%!public Map<Integer, String> obtenerHashMap(ArrayList<Calificacion> calificaciones) {
-
-		Map<Integer, String> mapa = new HashMap<Integer, String>();
-		Iterator<Map.Entry<Integer, String>> it = mapa.entrySet().iterator();
-		for (int i = 0; i < calificaciones.size(); i++) {
-			int alumno = calificaciones.get(i).getAlumno();
-			String year = calificaciones.get(i).getYear();
-
-			mapa.put(alumno, year);
-		}
-		return mapa;
-	}%>
