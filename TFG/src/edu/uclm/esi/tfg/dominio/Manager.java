@@ -331,8 +331,13 @@ public class Manager {
 	}
 
 	public void registrarAlumno(int id) throws Exception {
+
 		Alumno alu = DAOAlumno.registrar(id);
-		updateAlumnos(alu);
+		if(alu != null) {
+			updateAlumnos(alu);
+		}else {
+			System.out.println("Este alumno ya existe");
+		}
 	}
 
 	private void registrarRelacionPrueba(String prueba1, String prueba2) throws Exception {
@@ -575,6 +580,26 @@ public class Manager {
 		}
 		return pruebas_aux;
 	}
+
+	/**
+	 * Devuelve la nota min/corte/max de una determinada prueba
+	 * @param prueba
+	 * @param asignatura
+	 * @return
+	 */
+	public double[] getInfoPrueba(String prueba, int asignatura) {
+		ArrayList<Prueba> pruebas_asig = getPruebasAsignatura(asignatura);
+		double[] notas= new double[3];
+		for (int j = 0; j < pruebas_asig.size(); j++) {
+			if (prueba.equals(pruebas_asig.get(j).getTitulo())) {
+				notas[0] = pruebas_asig.get(j).getN_min();
+				notas[1] = pruebas_asig.get(j).getN_corte();
+				notas[2] =pruebas_asig.get(j).getN_max();
+			}
+		}
+		return notas;
+	}
+
 	/**
 	 * Es llamado por el metodo anterior y es parte del proceso del mismo
 	 * @param id

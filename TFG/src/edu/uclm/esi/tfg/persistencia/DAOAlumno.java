@@ -36,25 +36,24 @@ public class DAOAlumno {
 		SQLBroker broker = new SQLBroker();
 		PreparedStatement ps =null;
 
-		if(checkExistAlumno(id,broker))//Si el usuario no existe
-			throw new Exception("Este alumno ya existe.");
+		if(!checkExistAlumno(id,broker)) {
+			try {
+				String consulta = "INSERT INTO Alumno (idAlumno) VALUES (?);";
+				ps = broker.getConex().prepareStatement(consulta);
+				ps.setInt(1, id);
+				ps.executeUpdate();
 
-		try {
-			String consulta = "INSERT INTO Alumno (idAlumno) VALUES (?);";
-			ps = broker.getConex().prepareStatement(consulta);
-			ps.setInt(1, id);
+			}catch (Exception e) {
+				System.err.println("Error" + e);
+			}
 
-			ps.executeUpdate();
-
-		}catch (Exception e) {
-			System.err.println("Error" + e);
+			Alumno alumno = new Alumno(id);
+			if(broker.getConex() !=null) 
+				broker.getConex().close();
+			return alumno;
+		}else {
+			return null;
 		}
-
-		Alumno alumno = new Alumno(id);
-		if(broker.getConex() !=null) 
-			broker.getConex().close();
-
-		return alumno;	
 	}
 
 	public static ArrayList<Alumno> cargar() {

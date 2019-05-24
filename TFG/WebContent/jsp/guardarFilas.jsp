@@ -17,8 +17,8 @@
 		String asignatura = jso.optString("asignatura");
 		JSONArray notas = jso.optJSONArray("pruebas");
 
-		crearAlumno(alumno);
-	
+		Manager.get().registrarAlumno(alumno);
+
 		ArrayList<String> list = new ArrayList<String>();
 		if (notas != null) {
 			ArrayList<Prueba> pruebas = Manager.get().getPruebasAsignatura(Integer.parseInt(asignatura));
@@ -29,11 +29,12 @@
 
 				if (nota.equals("") || nota.equals(" ")) {
 					System.out.println(prueba + " sin calificacion");
-					
-				}else if(nota.toUpperCase().equals("NP")){
+
+				} else if (nota.toUpperCase().equals("NP")) {
 					Manager.get().registrarCalificacion(alumno, pruebas.get(i).getId(), curso, (-1.0));
 				} else {
-					Manager.get().registrarCalificacion(alumno, pruebas.get(i).getId(), curso, Double.parseDouble(nota));
+					Manager.get().registrarCalificacion(alumno, pruebas.get(i).getId(), curso,
+							Double.parseDouble(nota));
 				}
 				System.out.println(prueba + " : " + nota);
 
@@ -45,11 +46,3 @@
 		e.printStackTrace();
 	}
 %>
-
-<%!public void crearAlumno(int alumno) {
-		try {
-			Manager.get().registrarAlumno(alumno);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}%>

@@ -18,7 +18,8 @@
 <link
 	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
 	rel="stylesheet" id="bootstrap-css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="../css/tabpanels.css" rel="stylesheet">
 
 <!-- Scripts -->
@@ -88,17 +89,18 @@
 
 		<div id="historico" class="tab-contents">
 			<h2>Histórico</h2>
-			<p id = "p_historico">Aquí se muestran todas las notas de los alumnos de años
-				anteriores pertenecientes a la asignatura seleccionada. Por favor,
-				seleccione una asignatura.</p>
+			<p id="p_historico">Aquí se muestran todas las notas de los
+				alumnos de años anteriores pertenecientes a la asignatura
+				seleccionada. Por favor, seleccione una asignatura.</p>
 			<div id="divtablaHistorico"
 				style="height: 550px; overflow-y: scroll;"></div>
 		</div>
 		<div id="curso_actual" class="tab-contents">
 			<h2>Curso actual</h2>
-			<p id = "p_actual">Aquí se muestran las notas de los alumnos que cursan la
-				asignatura seleccionada en el curso actual. Por favor, seleccione
-				una asignatura.</p>
+			<p id="p_actual">Aquí se muestran las notas de los alumnos que
+				cursan la asignatura seleccionada en el curso actual. Por favor,
+				seleccione una asignatura.</p>
+			<div id="info_prueba"></div>
 			<div id="divtablaCursoActual"
 				style="height: 550px; overflow-y: scroll;"></div>
 		</div>

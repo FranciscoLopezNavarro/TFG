@@ -7,6 +7,7 @@ function seleccion() {
     mostrarAsigElegida($("#comboAsignaturas :selected").text());
 }
 
+
 function addRow()
 {
     if($("#tablaCursoActual tbody tr").length> 0){
@@ -210,6 +211,19 @@ function obtenerAsignatura(){
     return asignatura;
 }
 
+$(function() {
+    $('#tab-button li').find('a').on('click', function(e) {
+	if($(this).text() == "Curso actual"){
+
+	    seleccionCursoActual();
+	}
+
+	if($(this).text() == "Histórico"){
+	    seleccionHistorico();
+	}
+
+    });
+});
 $(document).on( "click", ".nota", function() {
     limpiartabla();
     var header =  $(this).closest('table').find('th').eq($(this).index()).html();
@@ -217,6 +231,8 @@ $(document).on( "click", ".nota", function() {
 	    prueba: header,
 	    asignatura: obtenerAsignatura()
     }
+
+    infoPrueba(json);
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST","../jsp/relacionesPruebas.jsp");
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -252,6 +268,22 @@ $(document).on( "click", ".nota", function() {
     }
     xmlhttp.send("header="+JSON.stringify(json));
 });
+
+function infoPrueba(json){
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/infoPrueba.jsp");
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    var respuesta = JSON.parse(xmlhttp.responseText);
+	    var nota_min = respuesta.Pruebas[0];
+	    var nota_corte = respuesta.Pruebas[0];
+	    var nota_max = respuesta.Pruebas[0];
+	    $("#info_prueba").innerHTML = "Nota mínima: " + nota_min + " Nota de corte: "+ nota_corte +" Nota máxima: " + nota_max;
+	}
+	xmlhttp.send("header="+JSON.stringify(json));
+    }
+}
 function limpiartabla(){
     $("#tablaCursoActual tr .nota").css('background-color', 'initial');
     $("#tablaCursoActual tr .nota").find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': '0%'});
