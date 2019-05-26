@@ -214,11 +214,12 @@ function obtenerAsignatura(){
 $(function() {
     $('#tab-button li').find('a').on('click', function(e) {
 	if($(this).text() == "Curso actual"){
-
+	    if($("#comboAsignaturas").val())
 	    seleccionCursoActual();
 	}
 
 	if($(this).text() == "Histórico"){
+	    if($("#comboAsignaturas").val())
 	    seleccionHistorico();
 	}
 
@@ -263,7 +264,7 @@ $(document).on( "click", ".nota", function() {
 
 		    }
 		});
-	    }
+s	    }
 	}
     }
     xmlhttp.send("header="+JSON.stringify(json));

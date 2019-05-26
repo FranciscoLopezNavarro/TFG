@@ -19,16 +19,22 @@ h3#asigElegida {
 }
 
 div#grafico_curso_actual {
-    height: 400px;
+	height: 400px;
 }
 
 div#grafico_historico {
-    height: 400px;
+	height: 400px;
 }
+
+div#tree-map {
+	width: 100%;
+	height: 400px;
+}
+
 .tab-contents {
 	height: 400px; /*grow*/
 }
 
 .tabs {
-    margin-bottom: 5%;
+	margin-bottom: 5%;
 }

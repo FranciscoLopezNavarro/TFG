@@ -48,6 +48,8 @@
 <script src="//www.amcharts.com/lib/4/core.js"></script>
 <script src="//www.amcharts.com/lib/4/charts.js"></script>
 <script src="//www.amcharts.com/lib/4/maps.js"></script>
+<script src="https://www.amcharts.com/lib/4/plugins/forceDirected.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
 
 </head>
 <body>
@@ -82,6 +84,7 @@
 		<h3 id="asigElegida"></h3>
 	</div>
 	<div id="graficos" style="display: none">
+		<div id="tree-map"></div>
 		<div class="bloque">
 			<div id="curso_actual">
 				<h4 id="h3cursoActual"></h4>

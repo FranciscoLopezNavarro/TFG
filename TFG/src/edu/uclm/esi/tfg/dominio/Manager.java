@@ -661,6 +661,56 @@ public class Manager {
 		}
 		return aprobados;
 	}
+
+/**
+ *Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba 
+ * @param prueba
+ * @return
+ */
+	public double getAprobadosPruebaPorcentaje(int prueba) {
+		int aprobados = 0;
+		int presentados = 0;
+		for (int j = 0; j < pruebas.size(); j++) {
+			for (int i = 0; i < calificaciones.size(); i++) {
+				if (calificaciones.get(i).getPrueba() == prueba && pruebas.get(j).getId() == prueba) {
+					if (calificaciones.get(i).getNota() >= pruebas.get(j).getN_corte()) {
+						aprobados++;
+					}
+					if (calificaciones.get(i).getNota() != (-1.0)) {
+						presentados ++;
+					}
+				}
+			}
+		}
+		double porcentaje = ((aprobados*1.0)/presentados);
+		return porcentaje;
+	}
+	
+	/**
+	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba en un determinado año, normalmente el curso actual
+	 * @param prueba
+	 * @param curso
+	 * @return
+	 */
+	public double getAprobadosPruebaPorcentaje(int prueba, String curso) {
+		int aprobados = 0;
+		int presentados = 0;
+		for (int j = 0; j < pruebas.size(); j++) {
+			for (int i = 0; i < calificaciones.size(); i++) {
+				if (calificaciones.get(i).getPrueba() == prueba && pruebas.get(j).getId() == prueba && calificaciones.get(i).getYear().equals(curso)) {
+					if (calificaciones.get(i).getNota() >= pruebas.get(j).getN_corte()) {
+						aprobados++;
+					}
+					if (calificaciones.get(i).getNota() != (-1.0)) {
+						presentados ++;
+					}
+				}
+			}
+		}
+		double porcentaje = ((aprobados*1.0)/presentados);
+		return porcentaje;
+	}
+	
 	/**
 	 * Este metodo devuelve el grado de alerta de un alumno en una asignatura
 	 * @param alumno
@@ -740,12 +790,14 @@ public class Manager {
 		return notas;
 	}
 
-	public Map<Integer, ArrayList<String>> obtenerHashMap(ArrayList<Calificacion> calificaciones) {
-		Map<Integer, ArrayList<String>> mapa = new HashMap<Integer,ArrayList<String>>();
+	public Map<Integer, HashMap<String, HashMap<Integer, Double>>> obtenerHashMap(ArrayList<Calificacion> calificaciones) {
+	//	Map<Integer, ArrayList<String>> mapa = new HashMap<Integer,ArrayList<String>>();
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> mapa = new HashMap <Integer,HashMap<String,HashMap<Integer, Double>>>();
+		
 		for (Calificacion  i : calificaciones) {
 			int alumno = i.getAlumno();
 			if(!mapa.containsKey(alumno)) {
-				ArrayList<String> years = new ArrayList<String>();
+				HashMap<String,HashMap<Integer, Double>> years = new HashMap<String,HashMap<Integer, Double>>();
 				mapa.put(alumno,years);
 			}
 		}
@@ -753,11 +805,26 @@ public class Manager {
 			int alumno = i.getAlumno();
 			String year = i.getYear();
 
-			ArrayList<String> aux = mapa.get(alumno);
-			if(!aux.contains(year)) {
-				aux.add(year);
+			HashMap<String, HashMap<Integer, Double>> aux = mapa.get(alumno);
+			HashMap<Integer, Double> notas = new HashMap<Integer, Double>();
+			
+			if(!aux.containsKey(year)) {
+				aux.put(year, notas);
 			}
-
+		}
+		
+		for (Calificacion  i : calificaciones) {
+			int alumno = i.getAlumno();
+			String year = i.getYear();
+			int prueba = i.getPrueba();
+			double nota = i.getNota();
+			
+			HashMap<String, HashMap<Integer, Double>> aux = mapa.get(alumno);
+			HashMap<Integer, Double> aux_notas = aux.get(year);
+			
+			if(!aux_notas.containsKey(prueba)) {
+				aux_notas.put(prueba, nota);
+			}
 		}
 		//		for (Map.Entry<Integer, ArrayList<String>> entry : mapa.entrySet()) {
 		//			System.out.println(entry.getKey() + " = " + entry.getValue().size());

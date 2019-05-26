@@ -37,9 +37,108 @@ function mostrarAsigElegida(asignatura) {
 }
 
 function calculoGraficos(){
+    //  calcularGraficoArbol();
     calcularGraficoCursoActual();
     calcularGraficoHistorico();
     calcularGraficoPruebas();
+}
+function calcularGraficoArbol(){
+
+
+//  am4core.useTheme(am4themes_animated);
+//  var chart = am4core.create("tree-map", am4plugins_forceDirected.ForceDirectedTree);
+//  var networkSeries = chart.series.push(new am4plugins_forceDirected.ForceDirectedSeries())
+//  var data = [];
+//  var children = [];
+//  var condicion= true;
+
+//  $(".tab-contents").each(function(){
+//  var div = $(this).prop("id");
+//  var aprobados_prueba = aprobadosPrueba(div);
+
+//  var json ={
+//  prueba: div,
+//  asignatura: obtenerAsignatura()
+//  }
+//  var xmlhttp = new XMLHttpRequest();
+//  xmlhttp.open("POST","../jsp/relacionesPruebas.jsp");
+//  xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+//  xmlhttp.onreadystatechange = function(){
+//  if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+//  var respuesta = JSON.parse(xmlhttp.responseText);
+//  for (var i = 0; i < respuesta.Pruebas.length; i++) {
+//  var nombre_prueba = respuesta.Pruebas[i];
+//  children.push({
+//  name: nombre_prueba, 
+//  value: aprobadosPrueba(nombre_prueba)
+//  })
+//  }
+//  }
+//  }
+//  current[splitted[i]] = {};
+//  current = current[splitted[i]];
+
+//  if(condicion){
+//  data.push({
+//  name: div, value: aprobados_prueba,
+//  children: calcularHijos()
+//  });
+//  }else{
+//  data.push({
+//  name: div, value: aprobados_prueba
+//  });
+//  }
+//  }
+
+//  data = [{
+//  name: 'Flora',
+//  children: [{
+//  name: div, value: aprobados_prueba
+//  }, {
+//  name: 'Floral',
+//  children: [{
+//  name: 'Chamomile', value: 1
+//  }, {
+//  name: 'Rose', value: 1
+//  }, {
+//  name: 'Jasmine', value: 1
+//  }]
+//  }]
+//  }, {
+//  name: 'Fruity',
+//  children: [{
+//  name: 'Berry',
+//  children: [{
+//  name: 'Blackberry', value: 1
+//  }, {
+//  name: 'Raspberry', value: 1
+//  }, {
+//  name: 'Blueberry', value: 1
+//  }, {
+//  name: 'Strawberry', value: 1
+//  }]
+//  }]
+//  }];
+//  });
+
+//  networkSeries.data = data;
+//  networkSeries.dataFields.linkWith = "linkWith";
+//  networkSeries.dataFields.name = "name";
+//  networkSeries.dataFields.id = "name";
+//  networkSeries.dataFields.value = "value";
+//  networkSeries.dataFields.children = "children";
+
+//  networkSeries.nodes.template.tooltipText = "{name}";
+//  networkSeries.nodes.template.fillOpacity = 1;
+
+//  networkSeries.nodes.template.label.text = "{name}"
+//  networkSeries.fontSize = 8;
+//  networkSeries.maxLevels = 2;
+//  networkSeries.maxRadius = am4core.percent(6);
+//  networkSeries.manyBodyStrength = -16;
+//  networkSeries.nodes.template.label.hideOversized = true;
+//  networkSeries.nodes.template.label.truncate = true;
+//  chart.legend = new am4charts.Legend();
 }
 
 function calcularGraficoCursoActual(){
@@ -108,6 +207,8 @@ function calcularGraficoHistorico(){
     var data = [];
     var i = 0;
 
+    var chicha = aprobadosCurso();
+
     for (i = 0; i <= years.length; i++) {
 	data.push(
 		{ year: years[i],
@@ -148,16 +249,21 @@ function calcularGraficoPruebas(){
     $(".tab-contents").each(function(){
 	var div = $(this).prop("id");
 
-	var aprobados_prueba = aprobadosPrueba(div);
-	var aprobados_prueba_y_asig = "60";
+	var aprobados_prueba_general = aprobadosPrueba(div);
+	var aprobados_prueba_asig_general = "60";
+
+	var aprobados_prueba_actual = aprobadosPruebaActual(div);
+	var aprobados_prueba_asig_actual = "60";
 	var data = [];
 
 	data = [{
 	    "prueba": div,
-	    "aprobados": aprobados_prueba
+	    "aprobados_general": aprobados_prueba_general,
+	    "aprobados_curso_actual": aprobados_prueba_actual
 	},{
 	    "prueba": div + " + asignatura",
-	    "aprobados": aprobados_prueba_y_asig
+	    "aprobados_general": aprobados_prueba_asig_general,
+	    "aprobados_curso_actual":aprobados_prueba_asig_actual
 	}];
 
 	var chart = am4core.create(div, am4charts.XYChart);
@@ -167,17 +273,34 @@ function calcularGraficoPruebas(){
 	categoryAxis.dataFields.category = "prueba";
 
 	var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-	valueAxis.title.text = "Aprobados";
+	valueAxis.title.text = " % Aprobados";
+	valueAxis.min = 0;
+	valueAxis.max = 100;
 
-	var series = chart.series.push(new am4charts.ColumnSeries());
-	series.name = "Aprobados";
-	series.columns.template.fill = am4core.color("#104547"); 
-	series.dataFields.valueY = "aprobados";
-	series.dataFields.categoryX = "prueba";
-	series.columns.template.width = am4core.percent(10);
-	series.columns.template.fill = am4core.color("#438bca");
-	series.fillOpacity = 0.85;
+
+	categoryAxis.renderer.cellStartLocation = 0.1;
+	categoryAxis.renderer.cellEndLocation = 0.9;
+	// Create series
+	function createSeries(field, name, color) {
+	    var series = chart.series.push(new am4charts.ColumnSeries());
+	    series.dataFields.valueY = field;
+	    series.dataFields.categoryX = "prueba";
+	    series.name = name;
+	    series.columns.template.fill = am4core.color(color);
+	    series.fillOpacity = 0.95;
+	    series.columns.template.tooltipText = "{name}: [bold]{valueY}[/]";
+	    series.columns.template.width = am4core.percent(40);
+
+	}
+
+	createSeries("aprobados_general", "% Aprobados histórico","#438bca");
+	createSeries("aprobados_curso_actual", "% Aprobados curso actual","#f6ae2d");
+
+	chart.legend = new am4charts.Legend();
+	chart.legend.labels.template.text = "{name} [bold]{valueY}[/]";
+	chart.legend.valueLabels.template.text = "{value.value}";
 	chart.paddingRight = am4core.percent(10);
+
     });
 }
 
@@ -194,20 +317,48 @@ function aprobadosPrueba(tituloPrueba){
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 	    var respuesta = JSON.parse(xmlhttp.responseText);
-	    aprobados = respuesta.aprobados;
+	    aprobados = parseFloat((respuesta.aprobados).replace(',', '.')).toFixed(2);
 	}		
     }
     xmlhttp.send("datos_prueba="+JSON.stringify(json));
     return aprobados;
 }
-function aprobadosPruebaAsig(){
-    xmlhttp.open("POST","../jsp/CargaTablaHistoricos.jsp");
+
+function aprobadosPruebaActual(tituloPrueba){
+    var aprobados;
+    var asignatura = obtenerAsignatura();
+    var json = {
+	    prueba: tituloPrueba,
+	    asignatura : asignatura,
+	    curso: obtenerCursoActual()
+    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/aprobadosPruebaActual.jsp", false);
     xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
-	    $("#divtablaHistorico").html(xmlhttp.responseText);	
-	    $("#p_historico").empty();
+	    var respuesta = JSON.parse(xmlhttp.responseText);
+	    aprobados = parseFloat((respuesta.aprobados).replace(',', '.')).toFixed(2);
 	}		
     }
-    xmlhttp.send("asignatura="+seleccionado);
+    xmlhttp.send("datos_prueba="+JSON.stringify(json));
+    return aprobados;
+}
+function aprobadosCurso(){
+    var respuesta;
+    var asignatura = obtenerAsignatura();
+    var json = {
+	    asignatura : asignatura
+    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/aprobadosCurso.jsp", false);
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    respuesta = JSON.parse(xmlhttp.responseText);
+
+	}		
+    }
+    xmlhttp.send("datos_prueba="+JSON.stringify(json));
+    return respuesta;
 }

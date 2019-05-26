@@ -47,31 +47,41 @@
 			<!-- CONTENIDO EN BASE A LA TABLA CALIFICACIONES -->
 			<tbody>
 				<%
-					Map<Integer, ArrayList<String>> alumno_year = Manager.get().obtenerHashMap(calificaciones);
-					Iterator<Map.Entry<Integer, ArrayList<String>>> it = alumno_year.entrySet().iterator();
+					Map<Integer, HashMap<String, HashMap<Integer, Double>>> alumno_year = Manager.get()
+							.obtenerHashMap(calificaciones);
+					Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = alumno_year.entrySet()
+							.iterator();
 
 					while (it.hasNext()) {
-						Map.Entry<Integer, ArrayList<String>> dupla = (Map.Entry<Integer, ArrayList<String>>) it.next();
+						Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
 						Integer alumno = dupla.getKey();
-						ArrayList<String> years = dupla.getValue();
+						HashMap<String, HashMap<Integer, Double>> years = dupla.getValue();
+						Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
 
-						for (int i = 0; i < years.size(); i++) {
-							String year = years.get(i);
+						while (it2.hasNext()) {
+							Map.Entry<String, HashMap<Integer, Double>> dupla2 = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+							String year = dupla2.getKey();
+							HashMap<Integer, Double> notas = dupla2.getValue();
+							Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
 				%>
 				<tr>
 					<td><%=alumno%></td>
 					<td><%=year%></td>
 
 					<%
-						double[] notas = Manager.get().devolverNotas(alumno, year, pruebas.size(), calificaciones);
-								for (int j = 0; j < notas.length; j++) {
-									if (notas[j] == -1.0) {
+						//double[] notas = Manager.get().devolverNotas(alumno, year, pruebas.size(), calificaciones);
+								//	for (int j = 0; j < notas.length; j++) {
+								while (it3.hasNext()) {
+									Map.Entry<Integer, Double> dupla3 = (Map.Entry<Integer, Double>) it3.next();
+									Double nota = dupla3.getValue();
+
+									if (nota == -1.0) {
 					%>
 					<td>NP</td>
 					<%
 						} else {
 					%>
-					<td><%=notas[j]%></td>
+					<td><%=nota%></td>
 					<%
 						}
 								}
