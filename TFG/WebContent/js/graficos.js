@@ -202,35 +202,38 @@ function calcularGraficoHistorico(){
     //Creamos el grafico e insertamos los valores
     var chart = am4core.create("grafico_historico", am4charts.XYChart);
 
-    var years = ['2017', '2018', '2019','2020'];
-    var aprobados = ['35','60','50','60'];
+ 
     var data = [];
     var i = 0;
 
-    var chicha = aprobadosCurso();
-
-    for (i = 0; i <= years.length; i++) {
-	data.push(
-		{ year: years[i],
-		    aprobados: aprobados[i]});
+    var info = aprobadosCurso();	
+    for (var i = 0; i < info.years.length; i++) {    
+	//for (var key in json.jsonData[i]) {   
+	//    for (var j = 0; j < json.jsonData[i][key].length; j++) {      
+	//	console.log(json.jsonData[i][key][j])        
+		data.push(
+			{ year: info.years[i],
+			    aprobados: info.aprobados[i]});
+	//    }
+	//}   
     }
 
     chart.data = data;
     chart.cursor= new am4charts.XYCursor();
     chart.responsive.enabled = true;
-    // Create axes
+//  Create axes
 
-    var xAxis = chart.xAxes.push(new am4charts.ValueAxis());
     var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    var xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
 
-    xAxis.title.text = "Año";
+    xAxis.title.text = "Curso";
     yAxis.title.text = "Aprobados";
     xAxis.dataFields.category = "year";
 
 
-    // Create series
+//  Create series
     var series1 = chart.series.push(new am4charts.LineSeries());
-    series1.dataFields.valueX = "year";
+    series1.dataFields.categoryX = "year";
     series1.dataFields.valueY = "aprobados";
     series1.strokeWidth = 2;
 
@@ -346,6 +349,7 @@ function aprobadosPruebaActual(tituloPrueba){
 }
 function aprobadosCurso(){
     var respuesta;
+    var resp;
     var asignatura = obtenerAsignatura();
     var json = {
 	    asignatura : asignatura
@@ -356,9 +360,9 @@ function aprobadosCurso(){
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 	    respuesta = JSON.parse(xmlhttp.responseText);
-
+	    resp = respuesta.aprobados;
 	}		
     }
     xmlhttp.send("datos_prueba="+JSON.stringify(json));
-    return respuesta;
+    return resp;
 }
