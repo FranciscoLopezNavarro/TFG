@@ -11,14 +11,13 @@
 
 	String datos_prueba = request.getParameter("datos_prueba");
 	JSONObject jso = new JSONObject(datos_prueba);
-	
-	String prueba = jso.optString("prueba");
 	int asignatura = Integer.parseInt(jso.optString("asignatura"));
+	
 	JSONObject respuesta = new JSONObject();
 
-	double aprobados = Manager.get().getCursos(asignatura)
+	Map<String, Integer> aprobados = Manager.get().getAprobadosCurso(asignatura);
 	
-	respuesta.put("aprobados", String.format("%.2f", aprobados));
+	respuesta.put("aprobados",aprobados);
 	response.setContentType("application/json");
 	response.getWriter().write(respuesta.toString());
 %>

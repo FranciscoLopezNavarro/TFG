@@ -100,7 +100,7 @@
 			<p id="p_actual">Aquí se muestran las notas de los alumnos que
 				cursan la asignatura seleccionada en el curso actual. Por favor,
 				seleccione una asignatura.</p>
-			<div id="info_prueba"></div>
+			<div><p id="info_prueba"></p></div>
 			<div id="divtablaCursoActual"
 				style="height: 550px; overflow-y: scroll;"></div>
 		</div>

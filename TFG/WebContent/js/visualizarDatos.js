@@ -215,12 +215,12 @@ $(function() {
     $('#tab-button li').find('a').on('click', function(e) {
 	if($(this).text() == "Curso actual"){
 	    if($("#comboAsignaturas").val())
-	    seleccionCursoActual();
+		seleccionCursoActual();
 	}
 
 	if($(this).text() == "Histórico"){
 	    if($("#comboAsignaturas").val())
-	    seleccionHistorico();
+		seleccionHistorico();
 	}
 
     });
@@ -264,7 +264,7 @@ $(document).on( "click", ".nota", function() {
 
 		    }
 		});
-s	    }
+	    }
 	}
     }
     xmlhttp.send("header="+JSON.stringify(json));
@@ -277,13 +277,14 @@ function infoPrueba(json){
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 	    var respuesta = JSON.parse(xmlhttp.responseText);
-	    var nota_min = respuesta.Pruebas[0];
-	    var nota_corte = respuesta.Pruebas[0];
-	    var nota_max = respuesta.Pruebas[0];
-	    $("#info_prueba").innerHTML = "Nota mínima: " + nota_min + " Nota de corte: "+ nota_corte +" Nota máxima: " + nota_max;
+	  //  parseFloat((width.riesgo).replace(',', '.')).toFixed(2)
+	    var nota_min = parseFloat(respuesta.Pruebas[0]);
+	    var nota_corte = parseFloat(respuesta.Pruebas[1]);
+	    var nota_max = parseFloat(+respuesta.Pruebas[2]);
+	    $("#info_prueba").text("Nota mínima: " + nota_min + " Nota de corte: "+ nota_corte +" Nota máxima: " + nota_max);
 	}
-	xmlhttp.send("header="+JSON.stringify(json));
     }
+    xmlhttp.send("header="+JSON.stringify(json));
 }
 function limpiartabla(){
     $("#tablaCursoActual tr .nota").css('background-color', 'initial');
