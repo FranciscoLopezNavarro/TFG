@@ -37,7 +37,7 @@ function mostrarAsigElegida(asignatura) {
 }
 
 function calculoGraficos(){
-    //  calcularGraficoArbol();
+    calcularGraficoArbol();
     calcularGraficoCursoActual();
     calcularGraficoHistorico();
     calcularGraficoPruebas();
@@ -45,100 +45,61 @@ function calculoGraficos(){
 function calcularGraficoArbol(){
 
 
-//  am4core.useTheme(am4themes_animated);
-//  var chart = am4core.create("tree-map", am4plugins_forceDirected.ForceDirectedTree);
-//  var networkSeries = chart.series.push(new am4plugins_forceDirected.ForceDirectedSeries())
-//  var data = [];
-//  var children = [];
-//  var condicion= true;
+    am4core.useTheme(am4themes_animated);
+    var chart = am4core.create("tree-map", am4plugins_forceDirected.ForceDirectedTree);
+    var networkSeries = chart.series.push(new am4plugins_forceDirected.ForceDirectedSeries())
 
-//  $(".tab-contents").each(function(){
-//  var div = $(this).prop("id");
-//  var aprobados_prueba = aprobadosPrueba(div);
 
-//  var json ={
-//  prueba: div,
-//  asignatura: obtenerAsignatura()
-//  }
-//  var xmlhttp = new XMLHttpRequest();
-//  xmlhttp.open("POST","../jsp/relacionesPruebas.jsp");
-//  xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-//  xmlhttp.onreadystatechange = function(){
-//  if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
-//  var respuesta = JSON.parse(xmlhttp.responseText);
-//  for (var i = 0; i < respuesta.Pruebas.length; i++) {
-//  var nombre_prueba = respuesta.Pruebas[i];
-//  children.push({
-//  name: nombre_prueba, 
-//  value: aprobadosPrueba(nombre_prueba)
-//  })
-//  }
-//  }
-//  }
-//  current[splitted[i]] = {};
-//  current = current[splitted[i]];
+    var nombre = [];
+    var aprobados =[];
+    var data = [];
+    $(".tab-contents").each(function(){
+	var div = $(this).prop("id");
 
-//  if(condicion){
-//  data.push({
-//  name: div, value: aprobados_prueba,
-//  children: calcularHijos()
-//  });
-//  }else{
-//  data.push({
-//  name: div, value: aprobados_prueba
-//  });
-//  }
-//  }
+	nombre.push(div);
+	aprobados.push(aprobadosPrueba(div));
+    });
 
-//  data = [{
-//  name: 'Flora',
-//  children: [{
-//  name: div, value: aprobados_prueba
-//  }, {
-//  name: 'Floral',
-//  children: [{
-//  name: 'Chamomile', value: 1
-//  }, {
-//  name: 'Rose', value: 1
-//  }, {
-//  name: 'Jasmine', value: 1
-//  }]
-//  }]
-//  }, {
-//  name: 'Fruity',
-//  children: [{
-//  name: 'Berry',
-//  children: [{
-//  name: 'Blackberry', value: 1
-//  }, {
-//  name: 'Raspberry', value: 1
-//  }, {
-//  name: 'Blueberry', value: 1
-//  }, {
-//  name: 'Strawberry', value: 1
-//  }]
-//  }]
-//  }];
-//  });
 
-//  networkSeries.data = data;
-//  networkSeries.dataFields.linkWith = "linkWith";
-//  networkSeries.dataFields.name = "name";
-//  networkSeries.dataFields.id = "name";
-//  networkSeries.dataFields.value = "value";
-//  networkSeries.dataFields.children = "children";
+    data = [{
+	name: nombre[0], value: aprobados[0],
+    }, 
+    {
+	name: nombre[1], value: aprobados[1],
+    },
+    {
+	name: nombre[2], value: aprobados[2],
+    },
+    {
+	name: nombre[3],value : aprobados[3],
+	children: [{
+	    name: nombre[4], value: aprobados[4],
+	    children: [{
+		name: nombre[5], value: aprobados[5],
+	    }]
+	}]
+    }];
 
-//  networkSeries.nodes.template.tooltipText = "{name}";
-//  networkSeries.nodes.template.fillOpacity = 1;
+    networkSeries.data = data;
+    networkSeries.dataFields.linkWith = "linkWith";
+    networkSeries.dataFields.name = "name";
+    networkSeries.dataFields.id = "name";
+    networkSeries.dataFields.value = "value";
+    networkSeries.dataFields.children = "children";
 
-//  networkSeries.nodes.template.label.text = "{name}"
-//  networkSeries.fontSize = 8;
-//  networkSeries.maxLevels = 2;
-//  networkSeries.maxRadius = am4core.percent(6);
-//  networkSeries.manyBodyStrength = -16;
-//  networkSeries.nodes.template.label.hideOversized = true;
-//  networkSeries.nodes.template.label.truncate = true;
-//  chart.legend = new am4charts.Legend();
+    networkSeries.nodes.template.tooltipText = "{name}: [bold]{value} %[/]";
+    networkSeries.nodes.template.fillOpacity = 1;
+
+    networkSeries.nodes.template.label.text = "{name}";
+    networkSeries.fontSize = 8;
+    networkSeries.maxLevels = 3;
+    networkSeries.maxRadius = am4core.percent(6);
+    networkSeries.manyBodyStrength = -25;
+    networkSeries.nodes.template.label.hideOversized = true;
+    networkSeries.nodes.template.label.truncate = true;
+
+    chart.legend = new am4charts.Legend();
+    chart.legend.labels.template.text = "Prueba: [bold {color}]{name}[/] Aprobados:[bold {color}]{value}[/] ";
 }
 
 function calcularGraficoCursoActual(){
@@ -199,7 +160,7 @@ function calcularGraficoCursoActual(){
 }
 function calcularGraficoHistorico(){
     $("#h3historico").text("Número de alumnos aprobados anualmente");
-    
+
     //Creamos el grafico e insertamos los valores
     var chart = am4core.create("grafico_historico", am4charts.XYChart);
     var data = [];
