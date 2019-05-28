@@ -199,23 +199,18 @@ function calcularGraficoCursoActual(){
 }
 function calcularGraficoHistorico(){
     $("#h3historico").text("Número de alumnos aprobados anualmente");
+    
     //Creamos el grafico e insertamos los valores
     var chart = am4core.create("grafico_historico", am4charts.XYChart);
-
- 
     var data = [];
     var i = 0;
 
     var info = aprobadosCurso();	
-    for (var i = 0; i < info.years.length; i++) {    
-	//for (var key in json.jsonData[i]) {   
-	//    for (var j = 0; j < json.jsonData[i][key].length; j++) {      
-	//	console.log(json.jsonData[i][key][j])        
-		data.push(
-			{ year: info.years[i],
-			    aprobados: info.aprobados[i]});
-	//    }
-	//}   
+    for (var i = 0; i < info.years.length; i++) {       
+	data.push(
+		{ year: info.years[i],
+		    aprobados: info.aprobados[i]});
+
     }
 
     chart.data = data;
@@ -229,7 +224,6 @@ function calcularGraficoHistorico(){
     xAxis.title.text = "Curso";
     yAxis.title.text = "Aprobados";
     xAxis.dataFields.category = "year";
-
 
 //  Create series
     var series1 = chart.series.push(new am4charts.LineSeries());
@@ -248,15 +242,16 @@ function calcularGraficoHistorico(){
     bullet1.tooltipText = "{year}: [bold]{aprobados}[/]";
 
 }
+
 function calcularGraficoPruebas(){
     $(".tab-contents").each(function(){
 	var div = $(this).prop("id");
 
 	var aprobados_prueba_general = aprobadosPrueba(div);
-	var aprobados_prueba_asig_general = "60";
+	var aprobados_prueba_asig_general = aprobadosPruebaAsig(div);
 
 	var aprobados_prueba_actual = aprobadosPruebaActual(div);
-	var aprobados_prueba_asig_actual = "60";
+	var aprobados_prueba_asig_actual = aprobadosPruebaAsigActual(div);
 	var data = [];
 
 	data = [{
@@ -347,6 +342,49 @@ function aprobadosPruebaActual(tituloPrueba){
     xmlhttp.send("datos_prueba="+JSON.stringify(json));
     return aprobados;
 }
+
+function aprobadosPruebaAsig(tituloPrueba){
+    var aprobados;
+    var asignatura = obtenerAsignatura();
+    var json = {
+	    prueba: tituloPrueba,
+	    asignatura : asignatura
+    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/aprobadosPruebaAsig.jsp", false);
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    var respuesta = JSON.parse(xmlhttp.responseText);
+	    aprobados = parseFloat((respuesta.aprobados).replace(',', '.')).toFixed(2);
+	}		
+    }
+    xmlhttp.send("datos_prueba="+JSON.stringify(json));
+    return aprobados;
+}
+
+function aprobadosPruebaAsigActual(tituloPrueba){
+    var aprobados;
+    var asignatura = obtenerAsignatura();
+    var json = {
+	    prueba: tituloPrueba,
+	    asignatura : asignatura,
+	    curso: obtenerCursoActual()
+    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/aprobadosPruebaAsigActual.jsp", false);
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    var respuesta = JSON.parse(xmlhttp.responseText);
+	    aprobados = parseFloat((respuesta.aprobados).replace(',', '.')).toFixed(2);
+	}		
+    }
+    xmlhttp.send("datos_prueba="+JSON.stringify(json));
+    return aprobados;
+}
+
+
 function aprobadosCurso(){
     var respuesta;
     var resp;

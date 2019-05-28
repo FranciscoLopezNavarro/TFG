@@ -664,20 +664,24 @@ public class Manager {
 	}
 
 	/**
-	 *Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba 
+	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba 
 	 * @param prueba
 	 * @return
 	 */
-	public double getAprobadosPruebaPorcentaje(int prueba) {
+	public double getAprobadosPruebaPorcentaje(String titulo_prueba, int asignatura) {
 		int aprobados = 0;
 		int presentados = 0;
-		for (int j = 0; j < pruebas.size(); j++) {
-			for (int i = 0; i < calificaciones.size(); i++) {
-				if (calificaciones.get(i).getPrueba() == prueba && pruebas.get(j).getId() == prueba) {
-					if (calificaciones.get(i).getNota() >= pruebas.get(j).getN_corte()) {
+		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
+		int prueba = getIDPrueba(titulo_prueba, pruebas_aux);
+
+		for (int j = 0; j < pruebas_aux.size(); j++) {
+			for (int i = 0; i < cali_aux.size(); i++) {
+				if (cali_aux.get(i).getPrueba() == prueba && pruebas_aux.get(j).getId() == prueba) {
+					if (cali_aux.get(i).getNota() >= pruebas_aux.get(j).getN_corte()) {
 						aprobados++;
 					}
-					if (calificaciones.get(i).getNota() != (-1.0)) {
+					if (cali_aux.get(i).getNota() != (-1.0)) {
 						presentados ++;
 					}
 				}
@@ -693,23 +697,115 @@ public class Manager {
 	 * @param curso
 	 * @return
 	 */
-	public double getAprobadosPruebaPorcentaje(int prueba, String curso) {
+	public double getAprobadosPruebaActualPorcentaje(String titulo_prueba, int asignatura, String curso) {
 		int aprobados = 0;
 		int presentados = 0;
-		for (int j = 0; j < pruebas.size(); j++) {
-			for (int i = 0; i < calificaciones.size(); i++) {
-				if (calificaciones.get(i).getPrueba() == prueba && pruebas.get(j).getId() == prueba && calificaciones.get(i).getYear().equals(curso)) {
-					if (calificaciones.get(i).getNota() >= pruebas.get(j).getN_corte()) {
-						aprobados++;
-					}
-					if (calificaciones.get(i).getNota() != (-1.0)) {
-						presentados ++;
+
+		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
+		int prueba = getIDPrueba(titulo_prueba, pruebas_aux);
+
+		for (int j = 0; j < pruebas_aux.size(); j++) {
+			for (int i = 0; i < cali_aux.size(); i++) {
+				if (cali_aux.get(i).getPrueba() == prueba && pruebas_aux.get(j).getId() == prueba) {
+					if(cali_aux.get(i).getYear().equals(curso)) {
+						if (cali_aux.get(i).getNota() >= pruebas_aux.get(j).getN_corte()) {
+							aprobados++;
+						}
+						if (cali_aux.get(i).getNota() != (-1.0)) {
+							presentados ++;
+						}
 					}
 				}
 			}
 		}
 		double porcentaje = ((aprobados*1.0)/presentados);
 		return porcentaje;
+	}
+
+	/**
+	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba 
+	 * @param prueba
+	 * @return
+	 */
+	public double getAprobadosPruebaAsigPorcentaje(String titulo_prueba, int asignatura) {
+		int aprobados_asig = 0;
+		double nota = 0.0;
+		boolean aprobado = false;
+		int aprobados_p = 0;
+		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
+		int prueba = getIDPrueba(titulo_prueba, pruebas_aux);
+
+		for (int j = 0; j < pruebas_aux.size(); j++) {
+			for (int i = 0; i < cali_aux.size(); i++) {
+				if (cali_aux.get(i).getPrueba() == prueba && pruebas_aux.get(j).getId() == prueba) {
+					if (cali_aux.get(i).getNota() >= pruebas_aux.get(j).getN_corte()) {
+						aprobados_p++;	
+						if(alumnoApruebaAsig(cali_aux.get(i).getAlumno(),asignatura)) {
+							aprobados_asig++;
+						}
+					}
+				}
+			}
+		}
+
+		double porcentaje = ((aprobados_asig*1.0)/aprobados_p);
+		return porcentaje;
+	}
+
+	/**
+	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba en un determinado a�o, normalmente el curso actual
+	 * @param prueba
+	 * @param curso
+	 * @return
+	 */
+	public double getAprobadosPruebaAsigActualPorcentaje(String titulo_prueba, int asignatura, String curso) {
+		int aprobados_asig = 0;
+		double nota = 0.0;
+		boolean aprobado=false;
+		int aprobados_p = 0;
+		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
+		int prueba = getIDPrueba(titulo_prueba, pruebas_aux);
+
+		for (int j = 0; j < pruebas_aux.size(); j++) {
+			for (int i = 0; i < cali_aux.size(); i++) {
+				if (cali_aux.get(i).getPrueba() == prueba && pruebas_aux.get(j).getId() == prueba) {
+					if(cali_aux.get(i).getYear().equals(curso)) {
+						if (cali_aux.get(i).getNota() >= pruebas_aux.get(j).getN_corte()) {
+							aprobados_p++;
+							if(alumnoApruebaAsig(cali_aux.get(i).getAlumno(),asignatura)) {
+								aprobados_asig++;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		double porcentaje = ((aprobados_asig*1.0)/aprobados_p);
+		return porcentaje;
+	}
+
+
+	private boolean alumnoApruebaAsig(int alumno, int asignatura) {
+
+		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
+		double nota = 0.0;
+		for (int j = 0; j < pruebas_aux.size(); j++) {
+			for (int i = 0; i < cali_aux.size(); i++) {
+				if (cali_aux.get(i).getAlumno() == alumno) {
+					nota+= cali_aux.get(i).getNota();
+				}
+			}
+		}
+		if(nota>=5.0) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 
 	/**
@@ -778,18 +874,6 @@ public class Manager {
 		return nota_max;
 	}
 
-	public double[] devolverNotas(Integer alumno, String year, Integer n_pruebas,ArrayList<Calificacion> calificaciones) {
-		double[] notas = new double[n_pruebas];
-		Integer aux = 0;
-		for (int i = 0; i < calificaciones.size(); i++) {
-			if (calificaciones.get(i).getAlumno() == alumno && calificaciones.get(i).getYear().equals(year)) {
-				notas[aux] = calificaciones.get(i).getNota();
-				aux++;
-			}
-		}
-
-		return notas;
-	}
 	/**
 	 * Este metodo devuelve un mapa con los alumnos que han aprobado cada curso
 	 * @param asignatura
@@ -826,7 +910,7 @@ public class Manager {
 					Map.Entry<Integer, Double> dupla3 = (Map.Entry<Integer, Double>) it3.next();
 					if(dupla3.getValue() != (-1))
 						nota+=dupla3.getValue();
-					
+
 				}
 				if(nota >= 5.0) {
 					Integer aux = aprobados.get(year);
@@ -835,8 +919,8 @@ public class Manager {
 			}
 		}
 		return aprobados;
-
 	}
+
 	/**
 	 * Este metodo devuelve un mapa con toda la info de la BD
 	 * @param calificaciones

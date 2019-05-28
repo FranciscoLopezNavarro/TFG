@@ -16,7 +16,7 @@
 	int asignatura = Integer.parseInt(jso.optString("asignatura"));
 	JSONObject respuesta = new JSONObject();
 
-	double aprobados = Manager.get().getAprobadosPruebaPorcentaje(Manager.get().getIDPrueba(prueba, Manager.get().getPruebasAsignatura(asignatura))) * 100;
+	double aprobados = Manager.get().getAprobadosPruebaPorcentaje(prueba,asignatura) * 100;
 	
 	respuesta.put("aprobados", String.format("%.2f", aprobados));
 	response.setContentType("application/json");

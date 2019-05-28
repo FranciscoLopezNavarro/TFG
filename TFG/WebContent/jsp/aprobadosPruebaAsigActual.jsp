@@ -8,16 +8,15 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%
-
 	String datos_prueba = request.getParameter("datos_prueba");
 	JSONObject jso = new JSONObject(datos_prueba);
-	
+
 	String prueba = jso.optString("prueba");
 	int asignatura = Integer.parseInt(jso.optString("asignatura"));
 	String curso = jso.optString("curso").replace(" ", "");
 	JSONObject respuesta = new JSONObject();
 
-	double aprobados = Manager.get().getAprobadosPruebaActualPorcentaje(prueba,asignatura,curso) * 100;
+	double aprobados = Manager.get().getAprobadosPruebaAsigActualPorcentaje(prueba, asignatura, curso) * 100;
 	
 	respuesta.put("aprobados", String.format("%.2f", aprobados));
 	response.setContentType("application/json");

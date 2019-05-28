@@ -20,7 +20,6 @@
 	Map<String, Integer> treeMap = new TreeMap<>(); 
     treeMap.putAll(mapa); 
 
-    
 	Iterator<Map.Entry<String, Integer>> it = treeMap.entrySet().iterator();
 
 	while (it.hasNext()) {
@@ -31,9 +30,6 @@
         json.accumulate("aprobados", aprobados); 
 	}
 	
-	//Gson gson = new Gson(); // com.google.gson.Gson
-	//String jsonFromMap = gson.toJson(map);
-	System.out.println(json); // 
 	respuesta.put("aprobados", json);
 	response.setContentType("application/json");
 	response.getWriter().write(respuesta.toString());
