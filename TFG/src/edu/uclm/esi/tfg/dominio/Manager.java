@@ -467,7 +467,7 @@ public class Manager {
 		int numero = 0;
 		while (it.hasNext()) {
 			Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
-			
+
 			HashMap<String, HashMap<Integer, Double>> years = dupla.getValue();
 			Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
 
@@ -541,7 +541,7 @@ public class Manager {
 		//		}
 		return mapa;
 	}
-	
+
 	/**
 	 * Devuelve un array con las pruebas que tiene una determinada asignatura
 	 * @param asignatura
@@ -689,7 +689,7 @@ public class Manager {
 		}
 		return ids;
 	}
-	
+
 	/**
 	 * Devuelve la nota min/corte/max de una determinada prueba
 	 * @param prueba
@@ -758,7 +758,7 @@ public class Manager {
 	}
 
 	/////////////////////////////////////////////////////METODOS PARA EL CALCULO DE LOS GRAFICOS////////////////////////////////////////////
-	
+
 	/**
 	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba 
 	 * @param prueba
@@ -825,16 +825,53 @@ public class Manager {
 	 * @return
 	 */
 	public double getAprobadosPruebaAsigPorcentaje(String titulo_prueba, int asignatura) {
-		int aprobados_asig = 0;
-		int aprobados_p = 0;
-		
+
 		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
 		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
-		
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura = obtenerHashMap(cali_aux);
+
+
+		int prueba = getIDPrueba(titulo_prueba, pruebas_aux);
+
+		for (int i = 0; i<pruebas_aux.size();i++) {	
+			if(pruebas_aux.get(i).getId() == prueba) {
+				double nota_corte =pruebas_aux.get(i).getN_corte();
+				Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = map_asignatura.entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> alumno_year = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
+					//int alumno = alumno_year.getKey();
+					HashMap<String, HashMap<Integer, Double>> years = alumno_year.getValue();
+					Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
+
+					while (it2.hasNext()) {
+						Map.Entry<String, HashMap<Integer, Double>> year_nota = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+						HashMap<Integer, Double> notas = year_nota.getValue();
+						Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
+
+						while (it3.hasNext()) {
+							Map.Entry<Integer, Double> pruebas_notas = (Map.Entry<Integer, Double>) it3.next();
+							int pr = pruebas_notas.getKey();
+							double nota = pruebas_notas.getValue();
+
+							if(pr == prueba && nota < nota_corte)
+								it.remove();
+						}
+					}
+				}
+			}
+		}
+
+		int aprobados_p = map_asignatura.size();
+		System.out.println("GENERAL");
+		System.out.println("Aprobados prueba" + titulo_prueba+"  "+aprobados_p);
+		int aprobados_asig = apruebaAsig(map_asignatura);
+		System.out.println("Aprobados prueba y asignatura" + titulo_prueba+"  "+aprobados_asig);
 
 		double porcentaje = ((aprobados_asig*1.0)/aprobados_p);
 		return porcentaje;
 	}
+
+
 
 	/**
 	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba en un determinado year, normalmente el curso actual
@@ -843,18 +880,95 @@ public class Manager {
 	 * @return
 	 */
 	public double getAprobadosPruebaAsigActualPorcentaje(String titulo_prueba, int asignatura, String curso) {
-		int aprobados_asig = 0;
-		int aprobados_p = 0;
-		
+
+		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura = obtenerHashMap(cali_aux);
+
+
+		int prueba = getIDPrueba(titulo_prueba, pruebas_aux);
+
+		for (int i = 0; i<pruebas_aux.size();i++) {	
+			if(pruebas_aux.get(i).getId() == prueba) {
+				double nota_corte =pruebas_aux.get(i).getN_corte();
+				Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = map_asignatura.entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> alumno_year = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
+					//int alumno = alumno_year.getKey();
+					HashMap<String, HashMap<Integer, Double>> years = alumno_year.getValue();
+					Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
+
+					while (it2.hasNext()) {
+						Map.Entry<String, HashMap<Integer, Double>> year_nota = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+
+						if(year_nota.getKey().equals(curso)) {
+							HashMap<Integer, Double> notas = year_nota.getValue();
+							Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
+
+							while (it3.hasNext()) {
+								Map.Entry<Integer, Double> pruebas_notas = (Map.Entry<Integer, Double>) it3.next();
+								int pr = pruebas_notas.getKey();
+								double nota = pruebas_notas.getValue();
+
+								if(pr == prueba && nota < nota_corte)
+									it.remove();
+							}
+						}else{
+							it.remove();
+						}
+					}
+				}
+			}
+		}
+
+		int aprobados_p = map_asignatura.size();
+		System.out.println("CURSO ACTUAL");
+		System.out.println("Aprobados prueba" + titulo_prueba+"  "+aprobados_p);
+		int aprobados_asig = apruebaAsig(map_asignatura);
+		System.out.println("Aprobados prueba y asignatura" + titulo_prueba+"  "+aprobados_asig);
+
 		double porcentaje = ((aprobados_asig*1.0)/aprobados_p);
 		return porcentaje;
 	}
 
 
 
-	
+
+	private int apruebaAsig(Map<Integer, HashMap<String, HashMap<Integer, Double>>> mismaSituacion) {
+
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> temp1 = new HashMap<Integer, HashMap<String, HashMap<Integer, Double>>>();
+		temp1.putAll(mismaSituacion);
+
+		Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = temp1.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
+			HashMap<String, HashMap<Integer, Double>> years = dupla.getValue();
+			Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
+
+			while (it2.hasNext()) {
+				Map.Entry<String, HashMap<Integer, Double>> dupla2 = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+				String year = dupla2.getKey();
+				HashMap<Integer, Double> notas = dupla2.getValue();
+
+				Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
+				Double nota = 0.0;
+				while (it3.hasNext()) {
+					Map.Entry<Integer, Double> dupla3 = (Map.Entry<Integer, Double>) it3.next();
+					if(dupla3.getValue() != (-1))
+						nota+=dupla3.getValue();
+
+				}
+				if(nota < 5.0) {
+					it.remove();
+				}
+			}
+		}
+		return temp1.size();
+	}
+
+
 	/////////////////////////////////////////////////////METODOS PARA EL CALCULO DE ALERTA////////////////////////////////////////////
-	
+
 	/**
 	 * Este metodo devuelve el grado de alerta de un alumno en una asignatura
 	 * @param alumno

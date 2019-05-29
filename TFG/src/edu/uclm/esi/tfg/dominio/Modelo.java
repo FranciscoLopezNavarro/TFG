@@ -101,7 +101,6 @@ public class Modelo {
 					Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = temp.entrySet().iterator();
 					while (it.hasNext()) {
 						Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> alumno_year = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
-						//int alumno = alumno_year.getKey();
 						HashMap<String, HashMap<Integer, Double>> years = alumno_year.getValue();
 						Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
 
