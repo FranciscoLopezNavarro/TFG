@@ -449,7 +449,99 @@ public class Manager {
 		return alumnos;
 	}
 
+	/**
+	 * Este metodo devuelve un mapa con los alumnos que han aprobado cada curso
+	 * @param asignatura
+	 * @param Integer 
+	 * @return
+	 */
+	public Map<String,Integer> getAprobadosCurso(int asignatura){
 
+		ArrayList<Prueba> pruebas_asig = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> calificaciones_asig = getCalificacionesPruebas(pruebas_asig);
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> info = obtenerHashMap(calificaciones_asig);
+		Map<String, Integer> aprobados = new HashMap<String, Integer>();
+
+		Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = info.entrySet().iterator();
+
+		int numero = 0;
+		while (it.hasNext()) {
+			Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
+			
+			HashMap<String, HashMap<Integer, Double>> years = dupla.getValue();
+			Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
+
+			while (it2.hasNext()) {
+				Map.Entry<String, HashMap<Integer, Double>> dupla2 = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+				String year = dupla2.getKey();
+				HashMap<Integer, Double> notas = dupla2.getValue();
+
+				if(!aprobados.containsKey(year))
+					aprobados.put(year, numero);
+
+				Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
+				Double nota = 0.0;
+				while (it3.hasNext()) {
+					Map.Entry<Integer, Double> dupla3 = (Map.Entry<Integer, Double>) it3.next();
+					if(dupla3.getValue() != (-1))
+						nota+=dupla3.getValue();
+
+				}
+				if(nota >= 5.0) {
+					Integer aux = aprobados.get(year);
+					aprobados.put(year, aux+1);
+				}
+			}
+		}
+		return aprobados;
+	}
+
+	/**
+	 * Este metodo devuelve un mapa con toda la info de la BD
+	 * @param calificaciones
+	 * @return
+	 */
+	public Map<Integer, HashMap<String, HashMap<Integer, Double>>> obtenerHashMap(ArrayList<Calificacion> calificaciones) {
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> mapa = new HashMap <Integer,HashMap<String,HashMap<Integer, Double>>>();
+
+		for (Calificacion  i : calificaciones) {
+			int alumno = i.getAlumno();
+			if(!mapa.containsKey(alumno)) {
+				HashMap<String,HashMap<Integer, Double>> years = new HashMap<String,HashMap<Integer, Double>>();
+				mapa.put(alumno,years);
+			}
+		}
+		for (Calificacion  i : calificaciones) {
+			int alumno = i.getAlumno();
+			String year = i.getYear();
+
+			HashMap<String, HashMap<Integer, Double>> aux = mapa.get(alumno);
+			HashMap<Integer, Double> notas = new HashMap<Integer, Double>();
+
+			if(!aux.containsKey(year)) {
+				aux.put(year, notas);
+			}
+		}
+
+		for (Calificacion  i : calificaciones) {
+			int alumno = i.getAlumno();
+			String year = i.getYear();
+			int prueba = i.getPrueba();
+			double nota = i.getNota();
+
+			HashMap<String, HashMap<Integer, Double>> aux = mapa.get(alumno);
+			HashMap<Integer, Double> aux_notas = aux.get(year);
+
+			if(!aux_notas.containsKey(prueba)) {
+				aux_notas.put(prueba, nota);
+			}
+		}
+		//		for (Map.Entry<Integer, ArrayList<String>> entry : mapa.entrySet()) {
+		//			System.out.println(entry.getKey() + " = " + entry.getValue().size());
+		//		}
+		return mapa;
+	}
+	
 	/**
 	 * Devuelve un array con las pruebas que tiene una determinada asignatura
 	 * @param asignatura
@@ -583,6 +675,22 @@ public class Manager {
 	}
 
 	/**
+	 * Es llamado por el metodo anterior y es parte del proceso del mismo
+	 * @param id
+	 * @return
+	 */
+	public ArrayList<Integer> pruebasRelacionadas(int id) {
+		ArrayList<Integer> ids = new ArrayList<Integer>();
+
+		for (int i = 0; i < relacionesPruebas.size(); i++) {
+			if (relacionesPruebas.get(i).getPrueba1() == id) {
+				ids.add(relacionesPruebas.get(i).getPrueba2());
+			}
+		}
+		return ids;
+	}
+	
+	/**
 	 * Devuelve la nota min/corte/max de una determinada prueba
 	 * @param prueba
 	 * @param asignatura
@@ -601,21 +709,7 @@ public class Manager {
 		return notas;
 	}
 
-	/**
-	 * Es llamado por el metodo anterior y es parte del proceso del mismo
-	 * @param id
-	 * @return
-	 */
-	public ArrayList<Integer> pruebasRelacionadas(int id) {
-		ArrayList<Integer> ids = new ArrayList<Integer>();
 
-		for (int i = 0; i < relacionesPruebas.size(); i++) {
-			if (relacionesPruebas.get(i).getPrueba1() == id) {
-				ids.add(relacionesPruebas.get(i).getPrueba2());
-			}
-		}
-		return ids;
-	}
 
 	/**
 	 * Devuelve el id de una Prueba y Asignatura
@@ -663,6 +757,8 @@ public class Manager {
 		return aprobados;
 	}
 
+	/////////////////////////////////////////////////////METODOS PARA EL CALCULO DE LOS GRAFICOS////////////////////////////////////////////
+	
 	/**
 	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba 
 	 * @param prueba
@@ -692,7 +788,7 @@ public class Manager {
 	}
 
 	/**
-	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba en un determinado a�o, normalmente el curso actual
+	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba en un determinado year, normalmente el curso actual
 	 * @param prueba
 	 * @param curso
 	 * @return
@@ -730,84 +826,35 @@ public class Manager {
 	 */
 	public double getAprobadosPruebaAsigPorcentaje(String titulo_prueba, int asignatura) {
 		int aprobados_asig = 0;
-		double nota = 0.0;
-		boolean aprobado = false;
 		int aprobados_p = 0;
+		
 		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
 		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
-		int prueba = getIDPrueba(titulo_prueba, pruebas_aux);
-
-		for (int j = 0; j < pruebas_aux.size(); j++) {
-			for (int i = 0; i < cali_aux.size(); i++) {
-				if (cali_aux.get(i).getPrueba() == prueba && pruebas_aux.get(j).getId() == prueba) {
-					if (cali_aux.get(i).getNota() >= pruebas_aux.get(j).getN_corte()) {
-						aprobados_p++;	
-						if(alumnoApruebaAsig(cali_aux.get(i).getAlumno(),asignatura)) {
-							aprobados_asig++;
-						}
-					}
-				}
-			}
-		}
+		
 
 		double porcentaje = ((aprobados_asig*1.0)/aprobados_p);
 		return porcentaje;
 	}
 
 	/**
-	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba en un determinado a�o, normalmente el curso actual
+	 * Este metodo devuelve el porcentaje de alumnos que aprueban una determinada prueba en un determinado year, normalmente el curso actual
 	 * @param prueba
 	 * @param curso
 	 * @return
 	 */
 	public double getAprobadosPruebaAsigActualPorcentaje(String titulo_prueba, int asignatura, String curso) {
 		int aprobados_asig = 0;
-		double nota = 0.0;
-		boolean aprobado=false;
 		int aprobados_p = 0;
-		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
-		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
-		int prueba = getIDPrueba(titulo_prueba, pruebas_aux);
-
-		for (int j = 0; j < pruebas_aux.size(); j++) {
-			for (int i = 0; i < cali_aux.size(); i++) {
-				if (cali_aux.get(i).getPrueba() == prueba && pruebas_aux.get(j).getId() == prueba) {
-					if(cali_aux.get(i).getYear().equals(curso)) {
-						if (cali_aux.get(i).getNota() >= pruebas_aux.get(j).getN_corte()) {
-							aprobados_p++;
-							if(alumnoApruebaAsig(cali_aux.get(i).getAlumno(),asignatura)) {
-								aprobados_asig++;
-							}
-						}
-					}
-				}
-			}
-		}
-
+		
 		double porcentaje = ((aprobados_asig*1.0)/aprobados_p);
 		return porcentaje;
 	}
 
 
-	private boolean alumnoApruebaAsig(int alumno, int asignatura) {
 
-		ArrayList<Prueba> pruebas_aux = getPruebasAsignatura(asignatura);
-		ArrayList<Calificacion> cali_aux = getCalificacionesPruebas(pruebas_aux);
-		double nota = 0.0;
-		for (int j = 0; j < pruebas_aux.size(); j++) {
-			for (int i = 0; i < cali_aux.size(); i++) {
-				if (cali_aux.get(i).getAlumno() == alumno) {
-					nota+= cali_aux.get(i).getNota();
-				}
-			}
-		}
-		if(nota>=5.0) {
-			return true;
-		}else {
-			return false;
-		}
-	}
-
+	
+	/////////////////////////////////////////////////////METODOS PARA EL CALCULO DE ALERTA////////////////////////////////////////////
+	
 	/**
 	 * Este metodo devuelve el grado de alerta de un alumno en una asignatura
 	 * @param alumno
@@ -831,142 +878,6 @@ public class Manager {
 
 		return alerta;
 	}
-
-	/**
-	 * Este metodo devuelve el numero de alumnos que aprueban una determinada
-	 * asignatura
-	 * 
-	 * @param asignatura
-	 * @return counter
-	 */
-	public int alumnosApruebanAsig(ArrayList<Prueba> pruebas_asig) {
-		int counter = 0;
-		double nota_alumno;
-		for (int i = 0; i < alumnos.size(); i++) {
-			nota_alumno = 0.0;
-
-			ArrayList<Calificacion> calificaciones_alumno = getCalificacionesAlumno(alumnos.get(i).getId());
-			for (int j = 0; j < calificaciones_alumno.size(); j++) {
-				for (int k = 0; k < pruebas_asig.size(); k++) {
-					if (calificaciones_alumno.get(j).getPrueba() == pruebas_asig.get(k).getId()) {
-						nota_alumno += calificaciones_alumno.get(j).getNota();
-					}
-				}
-			}
-			if (nota_alumno >= (nota_max(pruebas_asig) / 2)) {
-				counter++;
-			}
-		}
-		return counter;
-	}
-
-	/**
-	 * Este metodo devuelve la nota maxima que se puede sacar en una determinada
-	 * asignatura
-	 * 
-	 * @param pruebas_asig
-	 * @return nota_max
-	 */
-	private double nota_max(ArrayList<Prueba> pruebas_asig) {
-		double nota_max = 0.0;
-		for (int i = 0; i < pruebas_asig.size(); i++)
-			nota_max += pruebas_asig.get(i).getN_max();
-		return nota_max;
-	}
-
-	/**
-	 * Este metodo devuelve un mapa con los alumnos que han aprobado cada curso
-	 * @param asignatura
-	 * @param Integer 
-	 * @return
-	 */
-	public Map<String,Integer> getAprobadosCurso(int asignatura){
-
-		ArrayList<Prueba> pruebas_asig = getPruebasAsignatura(asignatura);
-		ArrayList<Calificacion> calificaciones_asig = getCalificacionesPruebas(pruebas_asig);
-		Map<Integer, HashMap<String, HashMap<Integer, Double>>> info = obtenerHashMap(calificaciones_asig);
-		Map<String, Integer> aprobados = new HashMap<String, Integer>();
-
-		Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = info.entrySet().iterator();
-
-		int numero = 0;
-		while (it.hasNext()) {
-			Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
-			int alumno = dupla.getKey();
-			HashMap<String, HashMap<Integer, Double>> years = dupla.getValue();
-			Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
-
-			while (it2.hasNext()) {
-				Map.Entry<String, HashMap<Integer, Double>> dupla2 = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
-				String year = dupla2.getKey();
-				HashMap<Integer, Double> notas = dupla2.getValue();
-
-				if(!aprobados.containsKey(year))
-					aprobados.put(year, numero);
-
-				Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
-				Double nota = 0.0;
-				while (it3.hasNext()) {
-					Map.Entry<Integer, Double> dupla3 = (Map.Entry<Integer, Double>) it3.next();
-					if(dupla3.getValue() != (-1))
-						nota+=dupla3.getValue();
-
-				}
-				if(nota >= 5.0) {
-					Integer aux = aprobados.get(year);
-					aprobados.put(year, aux+1);
-				}
-			}
-		}
-		return aprobados;
-	}
-
-	/**
-	 * Este metodo devuelve un mapa con toda la info de la BD
-	 * @param calificaciones
-	 * @return
-	 */
-	public Map<Integer, HashMap<String, HashMap<Integer, Double>>> obtenerHashMap(ArrayList<Calificacion> calificaciones) {
-		Map<Integer, HashMap<String, HashMap<Integer, Double>>> mapa = new HashMap <Integer,HashMap<String,HashMap<Integer, Double>>>();
-
-		for (Calificacion  i : calificaciones) {
-			int alumno = i.getAlumno();
-			if(!mapa.containsKey(alumno)) {
-				HashMap<String,HashMap<Integer, Double>> years = new HashMap<String,HashMap<Integer, Double>>();
-				mapa.put(alumno,years);
-			}
-		}
-		for (Calificacion  i : calificaciones) {
-			int alumno = i.getAlumno();
-			String year = i.getYear();
-
-			HashMap<String, HashMap<Integer, Double>> aux = mapa.get(alumno);
-			HashMap<Integer, Double> notas = new HashMap<Integer, Double>();
-
-			if(!aux.containsKey(year)) {
-				aux.put(year, notas);
-			}
-		}
-
-		for (Calificacion  i : calificaciones) {
-			int alumno = i.getAlumno();
-			String year = i.getYear();
-			int prueba = i.getPrueba();
-			double nota = i.getNota();
-
-			HashMap<String, HashMap<Integer, Double>> aux = mapa.get(alumno);
-			HashMap<Integer, Double> aux_notas = aux.get(year);
-
-			if(!aux_notas.containsKey(prueba)) {
-				aux_notas.put(prueba, nota);
-			}
-		}
-		//		for (Map.Entry<Integer, ArrayList<String>> entry : mapa.entrySet()) {
-		//			System.out.println(entry.getKey() + " = " + entry.getValue().size());
-		//		}
-		return mapa;
-	}
-
 
 }
 
