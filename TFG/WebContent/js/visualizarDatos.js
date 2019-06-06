@@ -39,7 +39,9 @@ function crearFilaInicial()
     var fila = "<tr></tr>";
     var celdaAlumno = "<td contenteditable='true' class='alumno'></td>";
     var celdaNotas = "<td contenteditable='true' class='nota'></td>";
-    var celdasGenericas =  "<td><div class'progress progress-striped active'><div class='progress-bar'></div></div><div class='grado_riesgo'></div></td>" +
+    var celdasGenericas =  "<td><div class='progress'><div class='progress-bar progress-bar-success' style='width: 0%'><span class='sr-only'>" +
+    "</span></div><div class='progress-bar progress-bar-warning' style='width: 0%'><span class='sr-only'></span></div>" +
+    "<div class='progress-bar progress-bar-danger' style='width: 0%'><span class='sr-only'></span></div></div><div class='grado_riesgo'></div></td>" +
     "<td><a><i class='fa fa-save' onclick='saveRow(this)'></i></a>" +
     "<a><i class='fa fa-trash' onclick='deleteRow(this)'></i></a></td>";
 
@@ -100,8 +102,16 @@ function calcularAlertas(){
 		var riesgo = parseFloat((width.riesgo).replace(',', '.')).toFixed(2);
 		var celda_alerta = filaActual.find(".alerta");
 
-		celda_alerta.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
-		celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		if(riesgo >= 60 ){
+		    celda_alerta.find(".progress-bar.progress-bar-danger").css({width : riesgo + '%'});
+		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		}else if (riesgo < 60 && riesgo >=40 ){
+		    celda_alerta.find(".progress-bar.progress-bar-warning").css({width : riesgo + '%'});
+		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		}else{
+		    celda_alerta.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
+		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		}
 	    }
 	}
 	xmlhttp.send("calculo_alerta="+JSON.stringify(json));
@@ -277,7 +287,7 @@ function infoPrueba(json){
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 	    var respuesta = JSON.parse(xmlhttp.responseText);
-	  //  parseFloat((width.riesgo).replace(',', '.')).toFixed(2)
+	    //  parseFloat((width.riesgo).replace(',', '.')).toFixed(2)
 	    var nota_min = parseFloat(respuesta.Pruebas[0]);
 	    var nota_corte = parseFloat(respuesta.Pruebas[1]);
 	    var nota_max = parseFloat(+respuesta.Pruebas[2]);

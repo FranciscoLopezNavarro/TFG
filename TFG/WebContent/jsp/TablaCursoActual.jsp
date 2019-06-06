@@ -53,13 +53,15 @@
 							.iterator();
 
 					while (it.hasNext()) {
-						Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
+						Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it
+								.next();
 						Integer alumno = dupla.getKey();
 						HashMap<String, HashMap<Integer, Double>> years = dupla.getValue();
 						Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
 
 						while (it2.hasNext()) {
-							Map.Entry<String, HashMap<Integer, Double>> dupla2 = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+							Map.Entry<String, HashMap<Integer, Double>> dupla2 = (Map.Entry<String, HashMap<Integer, Double>>) it2
+									.next();
 							String year = dupla2.getKey();
 							HashMap<Integer, Double> notas = dupla2.getValue();
 							Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
@@ -96,13 +98,13 @@
 					<td class="alerta">
 						<div class="progress">
 							<div class="progress-bar progress-bar-success" style="width: 0%">
-								<span class="sr-only">35% completado (éxito)</span>
+								<span class="sr-only"></span>
 							</div>
 							<div class="progress-bar progress-bar-warning" style="width: 0%">
-								<span class="sr-only">20% completado (aviso)</span>
+								<span class="sr-only">)</span>
 							</div>
 							<div class="progress-bar progress-bar-danger" style="width: 0%">
-								<span class="sr-only">10% completado (peligro)</span>
+								<span class="sr-only"></span>
 							</div>
 						</div>
 						<div class="grado_riesgo"></div>

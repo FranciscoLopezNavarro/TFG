@@ -112,10 +112,13 @@ function calcularGraficoCursoActual(){
 
     // Se añaden los datos
     chart.data = [ {
-	"alumnos": "En riesgo",
+	"alumnos": "Riesgo Elevado",
 	"numero": alumnos_riesgo
     }, {
 	"alumnos": "Sin riesgo",
+	"numero": (total_alumnos - alumnos_riesgo)
+    },{
+	"alumnos": "Riesgo moderado",
 	"numero": (total_alumnos - alumnos_riesgo)
     }];
 
@@ -127,6 +130,7 @@ function calcularGraficoCursoActual(){
     //Coloress
     pieSeries.colors.list = [
 	am4core.color("#ce5c5c"),
+	am4core.color("#438BCA"),
 	am4core.color("#438BCA")
 	];
 
