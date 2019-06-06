@@ -455,16 +455,20 @@ public class Manager {
 	 * @param Integer 
 	 * @return
 	 */
-	public Map<String,Integer> getAprobadosCurso(int asignatura){
+	public Map<String,Double> getAprobadosCurso(int asignatura){
 
 		ArrayList<Prueba> pruebas_asig = getPruebasAsignatura(asignatura);
 		ArrayList<Calificacion> calificaciones_asig = getCalificacionesPruebas(pruebas_asig);
 		Map<Integer, HashMap<String, HashMap<Integer, Double>>> info = obtenerHashMap(calificaciones_asig);
 		Map<String, Integer> aprobados = new HashMap<String, Integer>();
+		Map<String, Integer> presentados = new HashMap<String, Integer>();
+		Map<String, Double> aprobadosPorcentaje = new HashMap<String, Double>();
+
 
 		Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = info.entrySet().iterator();
 
-		int numero = 0;
+		int n_aprobados = 0;
+		int n_presentados = 0;
 		while (it.hasNext()) {
 			Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
 
@@ -477,7 +481,10 @@ public class Manager {
 				HashMap<Integer, Double> notas = dupla2.getValue();
 
 				if(!aprobados.containsKey(year))
-					aprobados.put(year, numero);
+					aprobados.put(year, n_aprobados);
+
+				if(!presentados.containsKey(year))
+					presentados.put(year, n_presentados);
 
 				Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
 				Double nota = 0.0;
@@ -491,9 +498,14 @@ public class Manager {
 					Integer aux = aprobados.get(year);
 					aprobados.put(year, aux+1);
 				}
+				Integer aux_p = presentados.get(year);
+				presentados.put(year, aux_p+1);
 			}
 		}
-		return aprobados;
+		for(String key : aprobados.keySet()) {
+			aprobadosPorcentaje.put(key, (aprobados.get(key)*1.0/presentados.get(key))*100);
+		}
+		return aprobadosPorcentaje;
 	}
 
 	/**

@@ -16,10 +16,8 @@ public class Modelo {
 
 		double desviacionAlumno = desviacionAlumno(pruebas_asig , calificaciones_alumno_curso);
 		double desviacionAsignatura = desviacionAsignatura(pruebas_asig , calificaciones_alumno_curso);
-
-
 		double prob_asig = getProbabilidadAsignatura(pruebas_asig, calificaciones_alumno_curso);
-		//double prob_intervalos =  probabilidadIntervalos(pruebas_asig, calificaciones_alumno_curso)/alumnos_aprobados;
+
 
 		double alerta = alerta(desviacionAlumno, desviacionAsignatura, prob_asig);
 		return alerta;
@@ -74,18 +72,24 @@ public class Modelo {
 		ArrayList<Calificacion> calificaciones_asig = Manager.get().getCalificacionesPruebas(pruebas_asig);
 		Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura = Manager.get().obtenerHashMap(calificaciones_asig);
 		Map<Integer, HashMap<String, HashMap<Integer, Double>>> mismaSituacion = alumnosMismaSituacion(map_asignatura,pruebas_asig, calificaciones_alumno_curso);
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> mismaSituacionIntervalo = alumnosMismaSituacionIntervalo(map_asignatura,pruebas_asig, calificaciones_alumno_curso);
 
-
+		//Calculos de probabilidad (Aprueba/Suspende)
 		int situacion_actual = mismaSituacion.size();
 		int aprueban_asig = apruebaAsig(mismaSituacion);
-
-		System.out.println("Alumno: "+ aprueban_asig +" / " +situacion_actual);
-
 		double probabilidad = ((aprueban_asig*1.0)/situacion_actual);
-		return probabilidad;
+
+		//Calculos de probabilidad (Aprueba en intervalo/Suspende)		
+		int situacion_actual_intervalo = mismaSituacionIntervalo.size();
+		int aprueban_asig_intervalo = apruebaAsig(mismaSituacionIntervalo);
+		double probabilidad_intervalo = ((aprueban_asig_intervalo*1.0)/situacion_actual_intervalo);
+
+		return compararProbabilidad(probabilidad, probabilidad_intervalo);
 	}
 
-	private Map<Integer, HashMap<String, HashMap<Integer, Double>>> alumnosMismaSituacion(Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura, ArrayList<Prueba> pruebas_asig, ArrayList<Calificacion> calificaciones_alumno_curso) {
+	private Map<Integer, HashMap<String, HashMap<Integer, Double>>> alumnosMismaSituacion(
+			Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura, 
+			ArrayList<Prueba> pruebas_asig, ArrayList<Calificacion> calificaciones_alumno_curso) {
 
 		Map<Integer, HashMap<String, HashMap<Integer, Double>>> temp = new HashMap<Integer, HashMap<String, HashMap<Integer, Double>>>();
 		temp.putAll(map_asignatura);
@@ -132,11 +136,80 @@ public class Modelo {
 		return temp;
 	}
 
+	private Map<Integer, HashMap<String, HashMap<Integer, Double>>> alumnosMismaSituacionIntervalo(
+			Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura, ArrayList<Prueba> pruebas_asig,
+			ArrayList<Calificacion> calificaciones_alumno_curso) {
+
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> temp = new HashMap<Integer, HashMap<String, HashMap<Integer, Double>>>();
+		temp.putAll(map_asignatura);
+
+		for (int i = 0; i<pruebas_asig.size();i++) {
+			for (int j= 0; j< calificaciones_alumno_curso.size();j++){
+
+				if(pruebas_asig.get(i).getId() == calificaciones_alumno_curso.get(j).getPrueba()) {
+					int prueba = pruebas_asig.get(i).getId();
+					double nota_corte = pruebas_asig.get(i).getN_corte();
+					double nota_max = pruebas_asig.get(i).getN_max();
+					double nota_alumno = calificaciones_alumno_curso.get(j).getNota();
+
+					Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = temp.entrySet().iterator();
+					while (it.hasNext()) {
+						Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> alumno_year = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
+						HashMap<String, HashMap<Integer, Double>> years = alumno_year.getValue();
+						Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
+
+						while (it2.hasNext()) {
+							Map.Entry<String, HashMap<Integer, Double>> year_nota = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+							HashMap<Integer, Double> notas = year_nota.getValue();
+							Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
+
+							while (it3.hasNext()) {
+								Map.Entry<Integer, Double> pruebas_notas = (Map.Entry<Integer, Double>) it3.next();
+								int pr = pruebas_notas.getKey();
+								double nota = pruebas_notas.getValue();
+
+								if((prueba == pr) && (nota_alumno >= nota_corte)) {
+
+									//Si hemos aprobado y el alumno ha suspendido se elimina el alumno del calculo
+									if(nota < nota_corte)
+										it.remove();
+
+									// 1 if para delimitar si el alumno se encuentra en el intervalo 1 una vez ha aprobado la prueba
+									if(nota_alumno <= (nota_corte + (nota_max-nota_corte/3))) {
+										if(nota > (nota_corte + (nota_max-nota_corte/3)))
+											it.remove();
+										// 2 if para delimitar si el alumno se encuentra en el intervalo 3 una vez ha aprobado la prueba
+									}else if(nota_alumno >= (nota_max - (nota_max-nota_corte/3))) {
+										if(nota < (nota_max - (nota_max-nota_corte/3)))
+											it.remove();
+										//En este else se trata cuando la nota del alumno se encuentra en el 2 intervalo
+
+									}else {
+										// alumno se encuentra en el intervalo 2 una vez ha aprobado la prueba
+										if(nota <= (nota_corte + (nota_max-nota_corte/3)) || nota >= (nota_max - (nota_max-nota_corte/3)))
+											it.remove();
+									}
+								} 
+								if((prueba == pr) && (nota_alumno < nota_corte) && (nota_alumno != -1.0)) {
+									//Si hemos suspendido y el alumno ha aprobado se elimina el alumno del calculo
+									if(nota >= nota_corte)
+										it.remove();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return temp;
+	}
+
+
 	private int apruebaAsig(Map<Integer, HashMap<String, HashMap<Integer, Double>>> mismaSituacion) {
 
 		Map<Integer, HashMap<String, HashMap<Integer, Double>>> temp1 = new HashMap<Integer, HashMap<String, HashMap<Integer, Double>>>();
 		temp1.putAll(mismaSituacion);
-		
+
 		Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = temp1.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
@@ -145,7 +218,6 @@ public class Modelo {
 
 			while (it2.hasNext()) {
 				Map.Entry<String, HashMap<Integer, Double>> dupla2 = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
-				String year = dupla2.getKey();
 				HashMap<Integer, Double> notas = dupla2.getValue();
 
 				Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();

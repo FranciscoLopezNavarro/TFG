@@ -170,7 +170,7 @@ function calcularGraficoHistorico(){
     for (var i = 0; i < info.years.length; i++) {       
 	data.push(
 		{ year: info.years[i],
-		    aprobados: info.aprobados[i]});
+		    aprobados: info.aprobados[i].replace(',', '.')});
 
     }
 
@@ -185,7 +185,9 @@ function calcularGraficoHistorico(){
     xAxis.title.text = "Curso";
     yAxis.title.text = "Aprobados";
     xAxis.dataFields.category = "year";
-
+    yAxis.min = 0;
+    yAxis.max = 100;
+    
 //  Create series
     var series1 = chart.series.push(new am4charts.LineSeries());
     series1.dataFields.categoryX = "year";
@@ -200,7 +202,7 @@ function calcularGraficoHistorico(){
 	property: "radius"
     });
 
-    bullet1.tooltipText = "{year}: [bold]{aprobados}[/]";
+    bullet1.tooltipText = "{year}: [bold]{aprobados}[/]%";
 
 }
 

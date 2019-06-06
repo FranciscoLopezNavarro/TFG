@@ -15,17 +15,17 @@
 
 	JSONObject respuesta = new JSONObject();
 	JSONObject json = new JSONObject();
-	Map<String, Integer> mapa = Manager.get().getAprobadosCurso(asignatura);
+	Map<String, Double> mapa = Manager.get().getAprobadosCurso(asignatura);
 	
-	Map<String, Integer> treeMap = new TreeMap<>(); 
+	Map<String, Double> treeMap = new TreeMap<>(); 
     treeMap.putAll(mapa); 
 
-	Iterator<Map.Entry<String, Integer>> it = treeMap.entrySet().iterator();
+	Iterator<Map.Entry<String, Double>> it = treeMap.entrySet().iterator();
 
 	while (it.hasNext()) {
-		Map.Entry<String, Integer> dupla = (Map.Entry<String, Integer>) it.next();
+		Map.Entry<String, Double> dupla = (Map.Entry<String, Double>) it.next();
 		String curso = dupla.getKey();
-		String aprobados = dupla.getValue().toString();
+		String aprobados = String.format("%.2f", dupla.getValue());
 		json.accumulate("years", curso); 
         json.accumulate("aprobados", aprobados); 
 	}
