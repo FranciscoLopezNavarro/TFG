@@ -33,12 +33,12 @@
 
 <%!private void comprobarCredenciales(String id, String pwd1, String pwd2) throws Exception {
 		if (id.length() == 0) {
-			throw new Exception("El email no puede estar vacío");
+			throw new Exception("El ID no puede estar vacío");
 		}
 		if (!pwd1.equals(pwd2)) {
 			throw new Exception("Las contraseñas no coindicen");
 		}
 		if (pwd1.length() < 4) {
-			throw new Exception("La contraseña tiene que tener 4 caracteres por lo menos");
+			throw new Exception("La contraseña tiene que tener al menos 4 caracteres");
 		}
 	}%>
