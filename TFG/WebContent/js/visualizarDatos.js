@@ -103,15 +103,27 @@ function calcularAlertas(){
 		var celda_alerta = filaActual.find(".alerta");
 
 		if(riesgo >= 60 ){
-		    celda_alerta.find(".progress-bar.progress-bar-danger").css({width : riesgo + '%'});
-		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
-		}else if (riesgo < 60 && riesgo >=40 ){
-		    celda_alerta.find(".progress-bar.progress-bar-warning").css({width : riesgo + '%'});
-		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
-		}else{
-		    celda_alerta.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
-		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
-		}
+		        celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+		        celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+		        celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
+		        
+		        celda_alerta.find(".progress-bar.progress-bar-danger").css({width : riesgo + '%'});
+		        celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		    }else if (riesgo < 60 && riesgo >=40 ){
+		        celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+		        celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+		        celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
+		        
+		        celda_alerta.find(".progress-bar.progress-bar-warning").css({width : riesgo + '%'});
+		        celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		    }else{
+		        celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+		        celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+		        celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
+		        
+		        celda_alerta.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
+		        celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		    }
 	    }
 	}
 	xmlhttp.send("calculo_alerta="+JSON.stringify(json));
@@ -265,12 +277,13 @@ $(document).on( "click", ".nota", function() {
 			celda_nota.css({'background-color': 'rgba(201, 76, 76, 0.1)'});
 
 			//LLAMADA AL METODO CALCULAR PROBABILIDAD(PRUEBA, ALUMNO)
-			celda_nota.find(".progress").css({'display': '' ,
+			celda_nota.find(".progress").css({'display': 'inline' ,
 			    'width' :'300%', 
 			    'margin-left': '-100%', 
 			    'margin-bottom': '-95%',
 			});
-			celda_nota.find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': '40%'});
+			var number = Math.floor((Math.random() * 100) + 1);
+			celda_nota.find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': number + '%'});
 
 		    }
 		});
@@ -298,6 +311,7 @@ function infoPrueba(json){
 }
 function limpiartabla(){
     $("#tablaCursoActual tr .nota").css('background-color', 'initial');
-    $("#tablaCursoActual tr .nota").find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': '0%'});
     $("#tablaCursoActual tr .nota").find(".progress").css({'display': 'none'});
+    $("#tablaCursoActual tr .nota").find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': '0%'});
+    
 }
