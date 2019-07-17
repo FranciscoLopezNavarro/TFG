@@ -1004,6 +1004,22 @@ public class Manager {
 
 		return alerta;
 	}
+	public double calculoAlertaPruebas(int alumno, int asignatura, String curso, String prueba1, String prueba2) {
+		double alerta = 0.0;
+		Modelo modelo = new Modelo();
+		ArrayList<Prueba> pruebas_asig = getPruebasAsignatura(asignatura);
+		ArrayList<Calificacion> calificaciones_alumno = getCalificacionesAlumno(alumno);
+		ArrayList<Calificacion> calificaciones_alumno_curso = new ArrayList<Calificacion>();
+
+		for (int i = 0; i < calificaciones_alumno.size(); i++) {
+			if (calificaciones_alumno.get(i).getYear().equals(curso)) {
+				calificaciones_alumno_curso.add(calificaciones_alumno.get(i));
+			}
+		}
+		alerta = modelo.calcularAlertaPruebas(calificaciones_alumno_curso, pruebas_asig, prueba1, prueba2);
+
+		return alerta;
+	}
 
 }
 

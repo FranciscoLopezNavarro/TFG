@@ -75,7 +75,9 @@
 					<td contenteditable="true" class="alumno"><%=alumno%></td>
 					<%
 						while (it3.hasNext()) {
+						
 									Map.Entry<Integer, Double> dupla3 = (Map.Entry<Integer, Double>) it3.next();
+									System.out.println(notas.size());
 									Double nota = dupla3.getValue();
 									if (nota == -1.0) {
 					%>
@@ -106,11 +108,30 @@
 							<div class="progress-bar progress-bar-danger" style="width: 0%">
 								<span class="sr-only"></span>
 							</div>
-						</div>
-						</td>
+						</div></td>
 					<%
 						}
 								}
+					if(notas.size()< pruebas.size()){
+						for (int i = 0; i < (pruebas.size()- notas.size());i++){
+	
+					%>
+						<td contenteditable="true" class="nota">
+						<div class="progress" style="display: none">
+							<div class="progress-bar progress-bar-success" style="width: 0%">
+								<span class="sr-only"></span>
+							</div>
+							<div class="progress-bar progress-bar-warning" style="width: 0%">
+								<span class="sr-only">)</span>
+							</div>
+							<div class="progress-bar progress-bar-danger" style="width: 0%">
+								<span class="sr-only"></span>
+							</div>
+						</div></td>
+					<%
+						}
+					
+					}
 					%>
 					<td class="alerta">
 						<div class="progress">

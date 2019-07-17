@@ -67,7 +67,8 @@ public class Modelo {
 	}
 
 	//TERCER CALCULO/////////
-	public double getProbabilidadAsignatura(ArrayList<Prueba> pruebas_asig, ArrayList<Calificacion> calificaciones_alumno_curso){
+	public double getProbabilidadAsignatura(ArrayList<Prueba> pruebas_asig, ArrayList<Calificacion> 
+	calificaciones_alumno_curso){
 
 		ArrayList<Calificacion> calificaciones_asig = Manager.get().getCalificacionesPruebas(pruebas_asig);
 		Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura = Manager.get().obtenerHashMap(calificaciones_asig);
@@ -258,4 +259,107 @@ public class Modelo {
 		return A;
 	}
 
+
+
+	///////////////// CALCULO DE PROBABILIDAD DE SUSPENDER PRUEBAS ////////////////////////////
+	public double calcularAlertaPruebas(ArrayList<Calificacion> calificaciones_alumno_curso,
+			ArrayList<Prueba> pruebas_asig, String prueba1, String prueba2) {
+		ArrayList<Calificacion> calificaciones_asig = Manager.get().getCalificacionesPruebas(pruebas_asig);
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura = Manager.get().obtenerHashMap(calificaciones_asig);
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> mismaSituacionPrueba = alumnosMismaSituacionPrueba1(map_asignatura,pruebas_asig, calificaciones_alumno_curso,prueba1);
+
+		int situacion_actual_prueba = mismaSituacionPrueba.size();
+		int aprueban_prueba = apruebaPrueba2(mismaSituacionPrueba,map_asignatura,pruebas_asig, calificaciones_alumno_curso,prueba2);
+		double probabilidadprueba = ((aprueban_prueba*1.0)/situacion_actual_prueba);
+
+		return 1.0 - probabilidadprueba;
+	}
+
+
+	private Map<Integer, HashMap<String, HashMap<Integer, Double>>> alumnosMismaSituacionPrueba1(
+			Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura, 
+			ArrayList<Prueba> pruebas_asig, ArrayList<Calificacion> calificaciones_alumno_curso, String prueba1) {
+
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> temp = new HashMap<Integer, HashMap<String, HashMap<Integer, Double>>>();
+		temp.putAll(map_asignatura);
+
+		for (int i = 0; i<pruebas_asig.size();i++) {
+			for (int j= 0; j< calificaciones_alumno_curso.size();j++){
+
+				if(pruebas_asig.get(i).getId() == calificaciones_alumno_curso.get(j).getPrueba() && pruebas_asig.get(i).getTitulo().equals(prueba1)) {
+					int prueba = pruebas_asig.get(i).getId();
+					double nota_corte = pruebas_asig.get(i).getN_corte();
+					double nota_alumno = calificaciones_alumno_curso.get(j).getNota();
+
+					Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = temp.entrySet().iterator();
+					while (it.hasNext()) {
+						Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> alumno_year = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
+						HashMap<String, HashMap<Integer, Double>> years = alumno_year.getValue();
+						Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
+
+						while (it2.hasNext()) {
+							Map.Entry<String, HashMap<Integer, Double>> year_nota = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+							HashMap<Integer, Double> notas = year_nota.getValue();
+							Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
+
+							while (it3.hasNext()) {
+								Map.Entry<Integer, Double> pruebas_notas = (Map.Entry<Integer, Double>) it3.next();
+								int pr = pruebas_notas.getKey();
+								double nota = pruebas_notas.getValue();
+
+								if((prueba == pr) && (nota_alumno >= nota_corte)) {
+									if(nota < nota_corte)
+										it.remove();
+								} 
+								if((prueba == pr) && (nota_alumno < nota_corte) && (nota_alumno != -1.0)) {
+									if(nota >= nota_corte)
+										it.remove();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return temp;
+	}
+	private int apruebaPrueba2(Map<Integer, HashMap<String, HashMap<Integer, Double>>> mismaSituacionPrueba,Map<Integer, HashMap<String, HashMap<Integer, Double>>> map_asignatura, 
+			ArrayList<Prueba> pruebas_asig, ArrayList<Calificacion> calificaciones_alumno_curso, String prueba2) {
+
+		Map<Integer, HashMap<String, HashMap<Integer, Double>>> temp1 = new HashMap<Integer, HashMap<String, HashMap<Integer, Double>>>();
+		temp1.putAll(mismaSituacionPrueba);
+		for (int i = 0; i<pruebas_asig.size();i++) {
+			for (int j= 0; j< calificaciones_alumno_curso.size();j++){
+
+				if(pruebas_asig.get(i).getTitulo().equals(prueba2)) {
+					int prueba = pruebas_asig.get(i).getId();
+					double nota_corte = pruebas_asig.get(i).getN_corte();
+					Iterator<Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>> it = temp1.entrySet().iterator();
+					while (it.hasNext()) {
+						Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>> dupla = (Map.Entry<Integer, HashMap<String, HashMap<Integer, Double>>>) it.next();
+						HashMap<String, HashMap<Integer, Double>> years = dupla.getValue();
+						Iterator<Map.Entry<String, HashMap<Integer, Double>>> it2 = years.entrySet().iterator();
+
+						while (it2.hasNext()) {
+							Map.Entry<String, HashMap<Integer, Double>> dupla2 = (Map.Entry<String, HashMap<Integer, Double>>) it2.next();
+							HashMap<Integer, Double> notas = dupla2.getValue();
+
+							Iterator<Map.Entry<Integer, Double>> it3 = notas.entrySet().iterator();
+							while (it3.hasNext()) {
+								Map.Entry<Integer, Double> pruebas_notas = (Map.Entry<Integer, Double>) it3.next();
+								int pr = pruebas_notas.getKey();
+								double nota = pruebas_notas.getValue();
+
+								if((prueba == pr) && (nota < nota_corte)) {
+										it.remove();
+								} 
+							}
+						}
+					}
+				}
+			}
+		}
+		return temp1.size();
+	}
 }

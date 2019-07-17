@@ -42,7 +42,7 @@ function crearFilaInicial()
     "<div class='progress'><div class='progress-bar progress-bar-success' style='width: 0%'><span class='sr-only'>" +
     "</span></div><div class='progress-bar progress-bar-warning' style='width: 0%'><span class='sr-only'></span></div>" +
     "<div class='progress-bar progress-bar-danger' style='width: 0%'><span class='sr-only'></span></div></div></td>";
-    
+
     var celdasGenericas =  "<td><div class='progress'><div class='progress-bar progress-bar-success' style='width: 0%'><span class='sr-only'>" +
     "</span></div><div class='progress-bar progress-bar-warning' style='width: 0%'><span class='sr-only'></span></div>" +
     "<div class='progress-bar progress-bar-danger' style='width: 0%'><span class='sr-only'></span></div></div><div class='grado_riesgo'></div></td>" +
@@ -107,27 +107,27 @@ function calcularAlertas(){
 		var celda_alerta = filaActual.find(".alerta");
 
 		if(riesgo >= 60 ){
-		        celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
-		        celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
-		        celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
-		        
-		        celda_alerta.find(".progress-bar.progress-bar-danger").css({width : riesgo + '%'});
-		        celda_alerta.find(".grado_riesgo").text(riesgo + '%');
-		    }else if (riesgo < 60 && riesgo >=40 ){
-		        celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
-		        celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
-		        celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
-		        
-		        celda_alerta.find(".progress-bar.progress-bar-warning").css({width : riesgo + '%'});
-		        celda_alerta.find(".grado_riesgo").text(riesgo + '%');
-		    }else{
-		        celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
-		        celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
-		        celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
-		        
-		        celda_alerta.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
-		        celda_alerta.find(".grado_riesgo").text(riesgo + '%');
-		    }
+		    celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+		    celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+		    celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
+
+		    celda_alerta.find(".progress-bar.progress-bar-danger").css({width : riesgo + '%'});
+		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		}else if (riesgo < 60 && riesgo >=40 ){
+		    celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+		    celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+		    celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
+
+		    celda_alerta.find(".progress-bar.progress-bar-warning").css({width : riesgo + '%'});
+		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		}else{
+		    celda_alerta.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+		    celda_alerta.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+		    celda_alerta.find(".progress-bar.progress-bar-success").css({width : '0%'});
+
+		    celda_alerta.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
+		    celda_alerta.find(".grado_riesgo").text(riesgo + '%');
+		}
 	    }
 	}
 	xmlhttp.send("calculo_alerta="+JSON.stringify(json));
@@ -145,7 +145,7 @@ function saveRow(ref){
     });
     var alumno =  $(fila).find(".alumno").html();
     var row = {};
-    
+
     $(fila).find(".nota").each(function (i) {
 	var key = pruebas[i],
 	value = $(this).contents().first().text();
@@ -282,35 +282,37 @@ $(document).on( "click", ".nota", function() {
 			celda_nota.css({'background-color': 'rgba(201, 76, 76, 0.1)'});
 
 			//LLAMADA AL METODO CALCULAR PROBABILIDAD(PRUEBA, ALUMNO)
-			celda_nota.find(".progress").css({'display': '' ,
-			    'width' :'300%', 
-			    'margin-left': '-100%', 
-			    'margin-bottom': '0%',
-			});
-			
-			var riesgo = Math.floor((Math.random() * 100) + 1);
-			if(riesgo >= 60 ){
-			        celda_nota.find(".progress-bar.progress-bar-danger").css({width : '0%'});
-			        celda_nota.find(".progress-bar.progress-bar-warning").css({width : '0%'});
-			        celda_nota.find(".progress-bar.progress-bar-success").css({width : '0%'});
-			        
-			        celda_nota.find(".progress-bar.progress-bar-danger").css({width : riesgo + '%'});
-			        celda_nota.find(".grado_riesgo").text(riesgo + '%');
+			if(celda_nota.contents().first().text().trim() == "" || celda_nota.contents().first().text().trim() == " "){
+			    celda_nota.find(".progress").css({'display': '' ,
+				'width' :'160%', 
+				'margin-left': '-30%', 
+				'margin-bottom': '0%',
+			    });
+			    var alumno = $(this).closest('tr').find(".alumno").html();
+			    var riesgo = calcularAlertaPrueba(alumno,header,nombre_prueba);
+			    if(riesgo >= 60 ){
+				celda_nota.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+				celda_nota.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+				celda_nota.find(".progress-bar.progress-bar-success").css({width : '0%'});
+
+				celda_nota.find(".progress-bar.progress-bar-danger").css({width : riesgo + '%'});
+				celda_nota.find(".grado_riesgo").text(riesgo + '%');
 			    }else if (riesgo < 60 && riesgo >=40 ){
 				celda_nota.find(".progress-bar.progress-bar-danger").css({width : '0%'});
 				celda_nota.find(".progress-bar.progress-bar-warning").css({width : '0%'});
 				celda_nota.find(".progress-bar.progress-bar-success").css({width : '0%'});
-			        
+
 				celda_nota.find(".progress-bar.progress-bar-warning").css({width : riesgo + '%'});
 				celda_nota.find(".grado_riesgo").text(riesgo + '%');
 			    }else{
 				celda_nota.find(".progress-bar.progress-bar-danger").css({width : '0%'});
 				celda_nota.find(".progress-bar.progress-bar-warning").css({width : '0%'});
 				celda_nota.find(".progress-bar.progress-bar-success").css({width : '0%'});
-			        
+
 				celda_nota.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
 				celda_nota.find(".grado_riesgo").text(riesgo + '%');
 			    }
+			}
 		    }
 		});
 	    }
@@ -318,7 +320,28 @@ $(document).on( "click", ".nota", function() {
     }
     xmlhttp.send("header="+JSON.stringify(json));
 });
+function calcularAlertaPrueba(alumno,prueba1,prueba2){
 
+    var riesgo;
+    var json ={
+	    alumno: alumno,
+	    prueba1: prueba1,
+	    prueba2: prueba2,
+	    curso:  obtenerCursoActual(),
+	    asignatura: obtenerAsignatura()
+    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST","../jsp/alertaPruebas.jsp",false);
+    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
+	    var width = JSON.parse(xmlhttp.responseText);
+	    riesgo = parseFloat((width.riesgo).replace(',', '.')).toFixed(2);
+	}
+    }
+    xmlhttp.send("calculo_alerta_pruebas="+JSON.stringify(json));
+    return riesgo;
+}
 function infoPrueba(json){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST","../jsp/infoPrueba.jsp");
@@ -326,7 +349,6 @@ function infoPrueba(json){
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status == 200){
 	    var respuesta = JSON.parse(xmlhttp.responseText);
-	    //  parseFloat((width.riesgo).replace(',', '.')).toFixed(2)
 	    var nota_min = parseFloat(respuesta.Pruebas[0]);
 	    var nota_corte = parseFloat(respuesta.Pruebas[1]);
 	    var nota_max = parseFloat(+respuesta.Pruebas[2]);
@@ -339,5 +361,5 @@ function limpiartabla(){
     $("#tablaCursoActual tr .nota").css('background-color', 'initial');
     $("#tablaCursoActual tr .nota").find(".progress").css({'display': 'none'});
     $("#tablaCursoActual tr .nota").find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': '0%'});
-    
+
 }
