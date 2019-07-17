@@ -35,7 +35,11 @@
 							double nota_max = pruebas.get(i).getN_max();
 							String puntos = Double.toString(nota_max);
 					%>
-					<th class="header_prueba" scope="col"><%=prueba%></th>
+					<th class="header_prueba" scope="col"><%=prueba%>
+						<div class="nota_max">
+							[0 -
+							<%=nota_max%>]
+						</div></th>
 					<%
 						}
 					%>
@@ -77,9 +81,15 @@
 					%>
 					<td contenteditable="true" class="nota">NP
 						<div class="progress" style="display: none">
-							<div
-								class="progress-bar progress-bar-striped bg-success progress-bar-animated"
-								style="width: 0%"></div>
+							<div class="progress-bar progress-bar-success" style="width: 0%">
+								<span class="sr-only"></span>
+							</div>
+							<div class="progress-bar progress-bar-warning" style="width: 0%">
+								<span class="sr-only">)</span>
+							</div>
+							<div class="progress-bar progress-bar-danger" style="width: 0%">
+								<span class="sr-only"></span>
+							</div>
 						</div>
 					</td>
 					<%
@@ -87,10 +97,17 @@
 					%>
 					<td contenteditable="true" class="nota"><%=nota%>
 						<div class="progress" style="display: none">
-							<div
-								class="progress-bar progress-bar-striped bg-success progress-bar-animated"
-								style="width: 0%"></div>
-						</div></td>
+							<div class="progress-bar progress-bar-success" style="width: 0%">
+								<span class="sr-only"></span>
+							</div>
+							<div class="progress-bar progress-bar-warning" style="width: 0%">
+								<span class="sr-only">)</span>
+							</div>
+							<div class="progress-bar progress-bar-danger" style="width: 0%">
+								<span class="sr-only"></span>
+							</div>
+						</div>
+						</td>
 					<%
 						}
 								}

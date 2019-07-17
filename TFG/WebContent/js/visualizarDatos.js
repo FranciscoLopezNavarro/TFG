@@ -38,7 +38,11 @@ function crearFilaInicial()
 {
     var fila = "<tr></tr>";
     var celdaAlumno = "<td contenteditable='true' class='alumno'></td>";
-    var celdaNotas = "<td contenteditable='true' class='nota'></td>";
+    var celdaNotas = "<td contenteditable='true' class='nota'>" +
+    "<div class='progress'><div class='progress-bar progress-bar-success' style='width: 0%'><span class='sr-only'>" +
+    "</span></div><div class='progress-bar progress-bar-warning' style='width: 0%'><span class='sr-only'></span></div>" +
+    "<div class='progress-bar progress-bar-danger' style='width: 0%'><span class='sr-only'></span></div></div></td>";
+    
     var celdasGenericas =  "<td><div class='progress'><div class='progress-bar progress-bar-success' style='width: 0%'><span class='sr-only'>" +
     "</span></div><div class='progress-bar progress-bar-warning' style='width: 0%'><span class='sr-only'></span></div>" +
     "<div class='progress-bar progress-bar-danger' style='width: 0%'><span class='sr-only'></span></div></div><div class='grado_riesgo'></div></td>" +
@@ -77,10 +81,10 @@ function deleteRow(ref){
 		}		
 	    }
 	    xmlhttp.send("delete="+JSON.stringify(json));
+	    fila.remove();
 	    return true;
 	}
     }
-    fila.remove();
 }
 
 function calcularAlertas(){
@@ -137,13 +141,14 @@ function saveRow(ref){
     var $table = $("#tablaCursoActual"),
     pruebas = [];
     $table.find(".header_prueba").each(function () {
-	pruebas.push($(this).html());
+	pruebas.push($(this).contents().first().text().trim());
     });
     var alumno =  $(fila).find(".alumno").html();
     var row = {};
+    
     $(fila).find(".nota").each(function (i) {
 	var key = pruebas[i],
-	value = $(this).html();
+	value = $(this).contents().first().text();
 	row[key] = value;
     });
 
@@ -249,7 +254,7 @@ $(function() {
 });
 $(document).on( "click", ".nota", function() {
     limpiartabla();
-    var header =  $(this).closest('table').find('th').eq($(this).index()).html();
+    var header =  $(this).closest('table').find('th').eq($(this).index()).contents().first().text().trim();
     var json ={
 	    prueba: header,
 	    asignatura: obtenerAsignatura()
@@ -266,7 +271,7 @@ $(document).on( "click", ".nota", function() {
 		var nombre_prueba = respuesta.Pruebas[i];
 		var indice;
 		$("#tablaCursoActual").find(".header_prueba").each(function () {
-		    if($(this).html() == nombre_prueba){
+		    if($(this).contents().first().text().trim() == nombre_prueba){
 			indice = $(this).index();
 		    }
 		});
@@ -277,14 +282,35 @@ $(document).on( "click", ".nota", function() {
 			celda_nota.css({'background-color': 'rgba(201, 76, 76, 0.1)'});
 
 			//LLAMADA AL METODO CALCULAR PROBABILIDAD(PRUEBA, ALUMNO)
-			celda_nota.find(".progress").css({'display': 'inline' ,
+			celda_nota.find(".progress").css({'display': '' ,
 			    'width' :'300%', 
 			    'margin-left': '-100%', 
-			    'margin-bottom': '-95%',
+			    'margin-bottom': '0%',
 			});
-			var number = Math.floor((Math.random() * 100) + 1);
-			celda_nota.find(".progress-bar.progress-bar-striped.bg-success.progress-bar-animated").css({'width': number + '%'});
-
+			
+			var riesgo = Math.floor((Math.random() * 100) + 1);
+			if(riesgo >= 60 ){
+			        celda_nota.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+			        celda_nota.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+			        celda_nota.find(".progress-bar.progress-bar-success").css({width : '0%'});
+			        
+			        celda_nota.find(".progress-bar.progress-bar-danger").css({width : riesgo + '%'});
+			        celda_nota.find(".grado_riesgo").text(riesgo + '%');
+			    }else if (riesgo < 60 && riesgo >=40 ){
+				celda_nota.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+				celda_nota.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+				celda_nota.find(".progress-bar.progress-bar-success").css({width : '0%'});
+			        
+				celda_nota.find(".progress-bar.progress-bar-warning").css({width : riesgo + '%'});
+				celda_nota.find(".grado_riesgo").text(riesgo + '%');
+			    }else{
+				celda_nota.find(".progress-bar.progress-bar-danger").css({width : '0%'});
+				celda_nota.find(".progress-bar.progress-bar-warning").css({width : '0%'});
+				celda_nota.find(".progress-bar.progress-bar-success").css({width : '0%'});
+			        
+				celda_nota.find(".progress-bar.progress-bar-success").css({width : riesgo + '%'});
+				celda_nota.find(".grado_riesgo").text(riesgo + '%');
+			    }
 		    }
 		});
 	    }
