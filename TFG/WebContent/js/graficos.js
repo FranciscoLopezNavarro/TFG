@@ -106,20 +106,20 @@ function calcularGraficoCursoActual(){
     $("#h3cursoActual").text("Porcentaje (%) de alumnos en riesgo. Curso: " + obtenerCursoActual());
 
     //Se crea el grafico
-    var total_alumnos = 6;
+    var total_alumnos = 15;
     var alumnos_riesgo = 2;
     var chart = am4core.create("grafico_curso_actual", am4charts.PieChart);
 
     // Se añaden los datos
     chart.data = [ {
 	"alumnos": "Riesgo Elevado",
-	"numero": alumnos_riesgo
+	"numero": 6
     }, {
 	"alumnos": "Sin riesgo",
-	"numero": 2
+	"numero": 5
     },{
 	"alumnos": "Riesgo moderado",
-	"numero": 2
+	"numero": 4
     }];
 
     var pieSeries = chart.series.push(new am4charts.PieSeries());
